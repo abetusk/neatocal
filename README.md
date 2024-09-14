@@ -9,6 +9,13 @@ This is a JavaScript port with added parameters (see below) and designed to be "
 
 Here is a [live demo](https://abetusk.github.io/neatcal).
 
+Screenshots
+---
+
+![default](img/netcal_default.png)
+
+![aligned](img/netcal_align.png)
+
 Parameters
 ---
 
