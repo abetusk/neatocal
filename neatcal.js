@@ -375,7 +375,7 @@ function neatcal_init() {
 
   let year_fraction_tot = 0;
   let year_fraction = [];
-  for ( let y = s_year; y <= e_year; y++) {
+  for ( let y = s_year; y <= e_year; y++ ) {
     let del_mo = (((cur_start_month + month_remain) > 12) ? (12-cur_start_month) : (month_remain));
     year_fraction.push( del_mo );
     cur_start_month = 0;
