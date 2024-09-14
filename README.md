@@ -12,9 +12,9 @@ Here is a [live demo](https://abetusk.github.io/neatcal).
 Screenshots
 ---
 
-![default](img/netcal_default.png)
+![default](img/neatcal_default.png)
 
-![aligned](img/netcal_align.png)
+![aligned](img/neatcal_align.png)
 
 Parameters
 ---
