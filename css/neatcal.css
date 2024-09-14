@@ -1,0 +1,83 @@
+/*
+@media print {
+	#info {
+		display: none;
+	}
+}
+*/
+
+html {
+	font-family: 'Oswald';
+}
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+table {
+	width: 100%;
+	height: calc(100% - 2.5em);
+	border-collapse: separate;
+	border-spacing: .5em 0;
+}
+td, th {
+	font-weight: normal;
+	text-transform: uppercase;
+	border-bottom: 1px solid #888;
+	padding: .3vmin .3vmin;
+	font-size: .9vmin;
+	font-weight: 300;
+	color: #000;
+}
+th {
+	font-size: 1.1vmin;
+	padding: 0;
+}
+td:empty {
+	border: 0;
+}
+.date {
+	display: inline-block;
+	width: 1.1em;
+}
+.day {
+	display: inline-block;
+	text-align: center;
+	width: 1em;
+	color: #888;
+}
+.weekend {
+	/* background: #d8d8d8; */
+	background: #eee;
+  font-weight: 400;
+}
+p {
+	margin: 0 0 .5em 0;
+	text-align: center;
+}
+* {
+	color-adjust: exact;
+	-webkit-print-color-adjust: exact;
+}
+#info {
+	font-family: 'Inter', sans-serif;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 5em 2em;
+	width: calc(100% - 6em);
+	background: #333;
+	color: #eee;
+	padding: 1em 1em .5em 1em;
+	font-size: 2vmax;
+	border-radius: .2em;
+}
+#info p {
+	text-align: left;
+	margin: 0 0 1em 0;
+	line-height: 135%;
+}
+#info a {
+	color: inherit;
+}
+

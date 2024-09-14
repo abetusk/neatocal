@@ -1,0 +1,108 @@
+<!--
+
+MIT License
+
+Copyright (c) 2022 Neatnik LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Calendar</title>
+
+<meta property="og:title" content="Calendar">
+<meta property="og:url" content="https://neatnik.net/calendar">
+<meta property="og:description" content="A simple printable calendar with the full year on a single page">
+
+<link rel='stylesheet' href='css/Oswald.css'>
+
+<script type='text/javascript' src='neatcal.js'></script>
+<link rel='stylesheet' href='css/neatcal.css'>
+
+</head>
+
+<body>
+
+<div id="info" style='display:none;'>
+  <p> If you print this page, you’ll get a nifty calendar that displays
+      all of the year’s dates on a single page. It will automatically
+      fit on a single sheet of paper of any size. For best results,
+      adjust your print settings to landscape orientation and disable
+      the header and footer.
+  </p>
+
+  <p> Take in the year all at once. Fold it up and carry it with you.
+      Jot down your notes on it. Plan things out and observe the
+      passage of time. Above all else, be kind to others.
+  </p>
+
+  <p> You can addin URL parameters to change the year, display style, start month, etc.
+
+  <ul>
+    <li> year </li>
+    <li> start_month  </li>
+    <li> layout (aligned-weekdays)</li>
+    <li> start_day (only valid with aligned-weekdays layout)</li>
+  </ul>
+
+  For example <a href='?year=1923'>`?year=1923`</a>
+
+  </p>
+
+  <p style="font-size: 80%; color: #999;">
+    <a href="https://github.com/abetusk/neatcal">Source code</a></p>
+  <p style="font-size: 80%; color: #999;">Based on <a href="https://neatnik.net/">Neatnik's</a> &#183;
+    original <a href="https://github.com/neatnik/calendar">source code</a></p>
+</div>
+
+  <div id='ui_year' style='width:100%;'>
+      <span style='display:inline-block; width:100%; justify-content:center; text-align:center; margin: 0 0 .5em 0;'>YYYY</span>
+  </div>
+
+  <table id='ui_table'>
+    <thead id='ui_thead'>
+      <tr id='ui_tr_month_name'>
+        <th>Jan</th>
+        <th>Feb</th>
+        <th>Mar</th>
+        <th>Apr</th>
+        <th>May</th>
+        <th>Jun</th>
+        <th>Jul</th>
+        <th>Aug</th>
+        <th>Sep</th>
+        <th>Oct</th>
+        <th>Nov</th>
+        <th>Dec</th>
+      </tr>
+    </thead>
+
+    <tbody id='ui_tbody'>
+    </tbody>
+
+  </table>
+
+</body>
+
+<script>
+  neatcal_init();
+</script>
+</html>
