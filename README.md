@@ -21,7 +21,7 @@ Parameters
 
 | URL Parameter | Description | Example |
 |---|---|---|
-| `year` | Change year (defaul to current year) | [...?year=1923](https://abetusk.github.io/neatcal?year=1923) |
+| `year` | Change year (defaul to current year) | [...?year=2030](https://abetusk.github.io/neatcal?year=2030) |
 | `start_month` | Start at month other than January. 0 indexed (`0`=Jan, `1`=Feb, ...).  | [...?start_month=7](https://abetusk.github.io/neatcal?start_month=7) |
 | `n_month` | Change number of months to something other than 12 (default `12`).  | [...?n_month=6](https://abetusk.github.io/neatcal?n_month=6) |
 | `layout` | Changes the layout of the calendar. `default` or `aligned-weekdays`.  | [...?layout=aligned-weekdays](https://abetusk.github.io/neatcal?layout=aligned-weekdays) |
