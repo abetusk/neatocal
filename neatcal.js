@@ -57,7 +57,11 @@ var NEATCAL_PARAM = {
   //
   //   Janurary (0) default
   //
-  "start_month" : 0
+  "start_month" : 0,
+
+  // weekend highlight color
+  //
+  "highlight_color": '#eee'
 
 };
 
@@ -201,6 +205,17 @@ function neatcal_aligned_weekdays() {
 
 }
 
+function neatcal_post_process() {
+  let highlight_color = NEATCAL_PARAM.highlight_color;
+
+  console.log(">>>", highlight_color);
+
+  let x = document.getElementsByClassName("weekend");
+  for (let i = 0; i < x.length; i++) {
+    x[i].style.background = highlight_color;
+  }
+}
+
 function neatcal_init() {
   console.log( window.location.search );
   let sp = new URLSearchParams(window.location.search);
@@ -212,6 +227,7 @@ function neatcal_init() {
   let layout_param = sp.get("layout");
   let start_month_param = sp.get("start_month");
   let start_day_param = sp.get("start_day");
+  let highlight_color_param = sp.get("highlight_color");
   let weekday_code_param = sp.get("weekday_code");
   let month_code_param = sp.get("month_code");
 
@@ -258,6 +274,19 @@ function neatcal_init() {
     }
   }
   NEATCAL_PARAM.start_day = start_day;
+
+  //---
+
+  let highlight_color = NEATCAL_PARAM.highlight_color;
+  if ((highlight_color_param != null) &&
+      (typeof highlight_color_param !== "undefined")) {
+    highlight_color = highlight_color_param;
+
+    if (highlight_color.match( /^[\da-fA-F]+/ )) {
+      highlight_color = "#" + highlight_color;
+    }
+  }
+  NEATCAL_PARAM.highlight_color = highlight_color;
 
   //---
 
@@ -316,5 +345,7 @@ function neatcal_init() {
     neatcal_default();
   }
 
+
+  neatcal_post_process();
 }
 
