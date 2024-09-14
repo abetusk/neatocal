@@ -41,38 +41,48 @@ SOFTWARE.
 
 <body>
 
-<div id="info" style='display:none;'>
-  <p> If you print this page, you’ll get a nifty calendar that displays
-      all of the year’s dates on a single page. It will automatically
-      fit on a single sheet of paper of any size. For best results,
-      adjust your print settings to landscape orientation and disable
-      the header and footer.
-  </p>
+  <!-- INFO -->
 
-  <p> Take in the year all at once. Fold it up and carry it with you.
-      Jot down your notes on it. Plan things out and observe the
-      passage of time. Above all else, be kind to others.
-  </p>
+  <div id="ui_info" style='display:none;'>
+    <p> If you print this page, you’ll get a nifty calendar that displays
+        all of the year’s dates on a single page. It will automatically
+        fit on a single sheet of paper of any size. For best results,
+        adjust your print settings to landscape orientation and disable
+        the header and footer.
+    </p>
 
-  <p> You can addin URL parameters to change the year, display style, start month, etc.
+    <p> Take in the year all at once. Fold it up and carry it with you.
+        Jot down your notes on it. Plan things out and observe the
+        passage of time. Above all else, be kind to others.
+    </p>
 
-  <ul>
-    <li> year </li>
-    <li> start_month  </li>
-    <li> layout (aligned-weekdays)</li>
-    <li> start_day (only valid with aligned-weekdays layout)</li>
-    <li> highlight_color</li>
-  </ul>
+    <p> You can addin URL parameters to change the year, display style, start month, etc.
 
-  For example <a href='?year=1923'>`?year=1923`</a>
+    <ul>
+      <li> year </li>
+      <li> start_month  </li>
+      <li> n_month </li>
+      <li> layout (`default` or `aligned-weekdays`)</li>
+      <li> start_day (only valid with aligned-weekdays layout)</li>
+      <li> highlight_color </li>
+      <li> weekday_code </li>
+      <li> month_code </li>
+      <li> help </li>
+    </ul>
 
-  </p>
+    For example <a href='?year=2030'>`?year=2030`</a>
 
-  <p style="font-size: 80%; color: #999;">
-    <a href="https://github.com/abetusk/neatcal">Source code</a></p>
-  <p style="font-size: 80%; color: #999;">Based on <a href="https://neatnik.net/">Neatnik's</a> &#183;
-    original <a href="https://github.com/neatnik/calendar">source code</a></p>
-</div>
+    </p>
+
+    <p style="font-size: 80%; color: #999;">
+      <a href="https://github.com/abetusk/neatcal">Source code</a></p>
+    <p style="font-size: 80%; color: #999;">Based on <a href="https://neatnik.net/">Neatnik's</a> &#183;
+      original <a href="https://github.com/neatnik/calendar">source code</a></p>
+  </div>
+
+  <!-- INFO -->
+
+
 
   <div id='ui_year' style='width:100%;'>
       <span style='display:inline-block; width:100%; justify-content:center; text-align:center; margin: 0 0 .5em 0;'>YYYY</span>

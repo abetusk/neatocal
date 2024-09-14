@@ -59,7 +59,7 @@ p {
 	color-adjust: exact;
 	-webkit-print-color-adjust: exact;
 }
-#info {
+#ui_info {
 	font-family: 'Inter', sans-serif;
 	position: absolute;
 	top: 0;
@@ -72,12 +72,12 @@ p {
 	font-size: 2vmax;
 	border-radius: .2em;
 }
-#info p {
+#ui_info p {
 	text-align: left;
 	margin: 0 0 1em 0;
 	line-height: 135%;
 }
-#info a {
+#ui_info a {
 	color: inherit;
 }
 

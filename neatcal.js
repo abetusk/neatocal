@@ -26,6 +26,10 @@ SOFTWARE.
 
 var NEATCAL_PARAM = {
 
+  // show info/help screen
+  //
+  "help" : false,
+
   // for aligned-weekdays, which day to start (0 indexed)
   //
   //   Monday (1) default
@@ -177,6 +181,8 @@ function neatcal_aligned_weekdays() {
 
   let tbody = document.getElementById("ui_tbody");
 
+  let tr_a = [];
+
   for (let idx=0; idx<42; idx++) {
 
     let tr = H.tr();
@@ -241,6 +247,7 @@ function neatcal_init() {
   // peel off parameters from URL
   //
 
+  let help_param = sp.get("help");
   let year_param = sp.get("year");
   let layout_param = sp.get("layout");
   let start_month_param = sp.get("start_month");
@@ -251,6 +258,13 @@ function neatcal_init() {
   let month_code_param = sp.get("month_code");
 
   //---
+
+  if ((help_param != null) &&
+      (typeof help_param !== "undefined")) {
+    let ui_info = document.getElementById("ui_info");
+    ui_info.style.display = '';
+  }
+
 
   let year = new Date().getFullYear();
   if ((year_param != null) &&
@@ -357,7 +371,7 @@ function neatcal_init() {
   let cur_start_month = NEATCAL_PARAM.start_month;
   let month_remain = NEATCAL_PARAM.n_month;
   let s_year = NEATCAL_PARAM.year;
-  let e_year = NEATCAL_PARAM.year + Math.floor((cur_start_month + month_remain)/12)
+  let e_year = NEATCAL_PARAM.year + Math.floor((cur_start_month + month_remain-1)/12)
 
   let year_fraction_tot = 0;
   let year_fraction = [];
