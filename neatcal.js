@@ -115,7 +115,12 @@ function neatcal_default() {
 
         let d = NEATCAL_PARAM.weekday_code[ dt.getDay() ];
 
-        if (d[0] == "S") { td.classList.add("weekend"); }
+        //if (d[0] == "S") { td.classList.add("weekend"); }
+        if ((dt.getDay() == 0) ||
+            (dt.getDay() == 6)) {
+          td.classList.add("weekend");
+        }
+
 
         let span_date = H.span((idx+1).toString(), "date");
         let span_day = H.span(d, "day");
@@ -185,7 +190,12 @@ function neatcal_aligned_weekdays() {
 
         let d = NEATCAL_PARAM.weekday_code[ dt.getDay() ];
 
-        if (d[0] == "S") { td.classList.add("weekend"); }
+        //if (d[0] == "S") { td.classList.add("weekend"); }
+        if ((dt.getDay() == 0) ||
+            (dt.getDay() == 6)) {
+          td.classList.add("weekend");
+        }
+
 
         let span_date = H.span((day_idx+1).toString(), "date");
         let span_day = H.span(d, "day");
@@ -207,9 +217,6 @@ function neatcal_aligned_weekdays() {
 
 function neatcal_post_process() {
   let highlight_color = NEATCAL_PARAM.highlight_color;
-
-  console.log(">>>", highlight_color);
-
   let x = document.getElementsByClassName("weekend");
   for (let i = 0; i < x.length; i++) {
     x[i].style.background = highlight_color;
@@ -281,12 +288,45 @@ function neatcal_init() {
   if ((highlight_color_param != null) &&
       (typeof highlight_color_param !== "undefined")) {
     highlight_color = highlight_color_param;
-
     if (highlight_color.match( /^[\da-fA-F]+/ )) {
       highlight_color = "#" + highlight_color;
     }
   }
   NEATCAL_PARAM.highlight_color = highlight_color;
+
+  //---
+
+  let weekday_code = NEATCAL_PARAM.weekday_code;
+  if ((weekday_code_param != null) &&
+      (typeof weekday_code_param !== "undefined")) {
+
+    weekday_code = weekday_code_param.split(",");
+
+    // padd out with blank
+    //
+    for (let i=weekday_code.length; i<7; i++) {
+      weekday_code.push("");
+    }
+
+  }
+  NEATCAL_PARAM.weekday_code = weekday_code;
+
+  //---
+
+  let month_code = NEATCAL_PARAM.month_code;
+  if ((month_code_param != null) &&
+      (typeof month_code_param !== "undefined")) {
+
+    month_code = month_code_param.split(",");
+
+    // padd out with blank
+    //
+    for (let i=month_code.length; i<7; i++) {
+      month_code.push("");
+    }
+
+  }
+  NEATCAL_PARAM.month_code = month_code;
 
   //---
 
