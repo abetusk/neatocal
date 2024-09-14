@@ -59,6 +59,10 @@ var NEATCAL_PARAM = {
   //
   "start_month" : 0,
 
+  // number of months to go out to
+  //
+  "n_month" : 12,
+
   // weekend highlight color
   //
   "highlight_color": '#eee'
@@ -87,10 +91,11 @@ var H = {
 function neatcal_default() {
   let year      = NEATCAL_PARAM.year;
   let start_mo  = NEATCAL_PARAM.start_month;
+  let n_mo      = NEATCAL_PARAM.n_month;
 
   let ui_tr_mo = document.getElementById("ui_tr_month_name");
   ui_tr_mo.innerHTML = "";
-  for (let i_mo = start_mo; i_mo < (start_mo+12); i_mo++) {
+  for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
     ui_tr_mo.appendChild( H.th( NEATCAL_PARAM.month_code[ i_mo%12 ] ) );
   }
 
@@ -100,9 +105,11 @@ function neatcal_default() {
     let tr = H.tr();
 
     let cur_year = year;
-    for (let i_mo = start_mo; i_mo < (start_mo+12); i_mo++) {
+    for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
       
-      if (i_mo >= 12) { cur_year = parseInt(year)+1; }
+      //if (i_mo >= 12) { cur_year = parseInt(year)+1; }
+      cur_year = parseInt(year) + Math.floor(i_mo/12);
+
       let cur_mo = i_mo%12;
 
       let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
@@ -143,10 +150,11 @@ function neatcal_default() {
 function neatcal_aligned_weekdays() {
   let year      = NEATCAL_PARAM.year;
   let start_mo  = NEATCAL_PARAM.start_month;
+  let n_mo      = NEATCAL_PARAM.n_month;
 
   let ui_tr_mo = document.getElementById("ui_tr_month_name");
   ui_tr_mo.innerHTML = "";
-  for (let i_mo = start_mo; i_mo < (start_mo+12); i_mo++) {
+  for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
     ui_tr_mo.appendChild( H.th( NEATCAL_PARAM.month_code[ i_mo%12 ] ) );
   }
 
@@ -154,11 +162,13 @@ function neatcal_aligned_weekdays() {
   //
   let start_day = NEATCAL_PARAM.start_day;
   let day_in_mo_start = [];
-  for (let i=0; i<12; i++) { day_in_mo_start.push(0); }
+  for (let i=0; i<n_mo; i++) { day_in_mo_start.push(0); }
 
-  for (let i_mo = start_mo; i_mo < (start_mo+12); i_mo++) {
-    let cur_year = year;
-    if (i_mo >= 12) { cur_year = parseInt(year)+1; }
+  for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
+    //let cur_year = year;
+    //if (i_mo >= 12) { cur_year = parseInt(year)+1; }
+    let cur_year = parseInt(year) + Math.floor(i_mo/12);
+
     let cur_mo = i_mo%12;
 
     let s = new Date(cur_year, cur_mo, 1).getDay();
@@ -172,9 +182,11 @@ function neatcal_aligned_weekdays() {
     let tr = H.tr();
 
     let cur_year = year;
-    for (let i_mo = start_mo; i_mo < (start_mo+12); i_mo++) {
+    for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
 
-      if (i_mo >= 12) { cur_year = parseInt(year)+1; }
+      //if (i_mo >= 12) { cur_year = parseInt(year)+1; }
+      cur_year = parseInt(year) + Math.floor(i_mo/12);
+
       let cur_mo = i_mo%12;
 
       let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
@@ -224,7 +236,6 @@ function neatcal_post_process() {
 }
 
 function neatcal_init() {
-  console.log( window.location.search );
   let sp = new URLSearchParams(window.location.search);
 
   // peel off parameters from URL
@@ -233,6 +244,7 @@ function neatcal_init() {
   let year_param = sp.get("year");
   let layout_param = sp.get("layout");
   let start_month_param = sp.get("start_month");
+  let n_month_param = sp.get("n_month");
   let start_day_param = sp.get("start_day");
   let highlight_color_param = sp.get("highlight_color");
   let weekday_code_param = sp.get("weekday_code");
@@ -269,6 +281,18 @@ function neatcal_init() {
     }
   }
   NEATCAL_PARAM.start_month = start_month;
+
+  //---
+
+  let n_month = NEATCAL_PARAM.n_month;
+  if ((n_month_param != null) &&
+      (typeof n_month_param !== "undefined")) {
+    n_month = parseInt(n_month_param);
+    if (isNaN(n_month)) {
+      n_month = 0;
+    }
+  }
+  NEATCAL_PARAM.n_month = n_month;
 
   //---
 
@@ -330,50 +354,43 @@ function neatcal_init() {
 
   //---
 
+  let cur_start_month = NEATCAL_PARAM.start_month;
+  let month_remain = NEATCAL_PARAM.n_month;
+  let s_year = NEATCAL_PARAM.year;
+  let e_year = NEATCAL_PARAM.year + Math.floor((cur_start_month + month_remain)/12)
+
+  let year_fraction_tot = 0;
+  let year_fraction = [];
+  for ( let y = s_year; y <= e_year; y++) {
+    let del_mo = (((cur_start_month + month_remain) > 12) ? (12-cur_start_month) : (month_remain));
+    year_fraction.push( del_mo );
+    cur_start_month = 0;
+    month_remain -= del_mo;
+
+    year_fraction_tot += del_mo;
+  }
+
+  for (let i=0; i < year_fraction.length; i++) {
+    year_fraction[i] /= year_fraction_tot;
+  }
+
   // if we only have one year, put it in the center
   // otherwise find the proportion of other years
   //   and adjust the year header appropriately
 
   let ui_year = document.getElementById("ui_year");
+  ui_year.innerHTML = "";
 
-  if (start_month == 0) {
-
+  for ( let y = s_year, idx = 0; y <= e_year; y++, idx++) {
     let span = H.span();
-    span.innerHTML = year;
+    span.innerHTML = y.toString();
     span.style["display"] = "inline-block";
-    span.style["width"] = "100%";
+    span.style["width"] = (100*year_fraction[idx]).toString() + "%";
     span.style["justify-content"] = "center";
     span.style["text-align"] = "center";
     span.style["margin"] = "0 0 .5em 0";
 
-    ui_year.innerHTML = "";
     ui_year.appendChild( span );
-  }
-
-  else {
-    let left_year_pct = (12 - start_month) / 12;
-    let right_year_pct = (start_month) / 12;
-
-    let lspan = H.span();
-    lspan.innerHTML = year;
-    lspan.style["display"] = "inline-block";
-    lspan.style["width"] = (100*left_year_pct).toString() + "%";
-    lspan.style["justify-content"] = "center";
-    lspan.style["text-align"] = "center";
-    lspan.style["margin"] = "0 0 .5em 0";
-
-    let rspan = H.span();
-    rspan.innerHTML = (parseInt(year)+1).toString();
-    rspan.style["display"] = "inline-block";
-    rspan.style["width"] = (100*right_year_pct).toString() + "%";
-    rspan.style["justify-content"] = "center";
-    rspan.style["text-align"] = "center";
-    rspan.style["margin"] = "0 0 .5em 0";
-
-    ui_year.innerHTML = "";
-    ui_year.appendChild( lspan );
-    ui_year.appendChild( rspan );
-
   }
 
   //---
