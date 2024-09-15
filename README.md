@@ -29,6 +29,7 @@ Parameters
 | `highlight_color` | Change the weekend highlight color (default `eee`) | [...?highlight_color=fee](https://abetusk.github.io/neatcal?highlight_color=fee) |
 | `weekday_code` | Comma separated list of weekday codes to use (default `Su,M,T,W,R,F,Sa`). Elements can be blank if no weekday code is wanted. | [...?weekday_code=S,M,T,W,T,F,S](https://abetusk.github.io/neatcal?weekday_code=S,M,T,W,T,F,S) |
 | `month_code` | Comma separated list of month codes to use (default `Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec`). Elements can be blank if no month code is wanted. | [...?month_code=J,F,M,A,M,J,J,A,S,O,N,D](https://abetusk.github.io/neatcal?month_code=J,F,M,A,M,J,J,A,S,O,N,D) |
+| `cell_height` | CSS parameter to alter cell height. | [...?cell_height=1.5em](https://abetusk.github.io/neatcal?cell_height=1.5em) |
 | `help` | Show help screen  | [...?help](https://abetusk.github.io/neatcal?help) |
 
 Presets

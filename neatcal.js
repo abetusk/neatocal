@@ -29,12 +29,20 @@ var NEATCAL_PARAM = {
   // experiments with filling in data in cells
   //
   "data": { },
-
   "_data": {
+    "2024-03-21" : "The quick brown fox jumps over the lazy yellow dog",
+    "2024-01-30" : "Sphynx of black quartz, hear my vow",
     "2024-06-01" : "Thule Worm-God of the Lords",
     "2024-08-11" : "Swarms Matriarch",
     "2024-10-20" :  "Higher Dimension Being"
   },
+
+  // Putting data in cells can alter the cell/row height,
+  // so we allow a user parameter to fiddle with cell height.
+  // The parameter here is directly applied to the `tr` style,
+  // so values of "1.5em" or "30px" will work.
+  //
+  "cell_height": "",
 
   // show info/help screen
   //
@@ -118,6 +126,12 @@ function neatcal_default() {
   for (let idx=0; idx<31; idx++) {
 
     let tr = H.tr();
+    if ((typeof NEATCAL_PARAM.cell_height !== "undefined") &&
+        (NEATCAL_PARAM.cell_height != null) &&
+        (NEATCAL_PARAM.cell_height != "")) {
+      tr.style.height = NEATCAL_PARAM.cell_height;
+    }
+
 
     let cur_year = year;
     for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
@@ -130,8 +144,7 @@ function neatcal_default() {
       let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
 
       let td = H.td();
-
-      td.style.width = (100/12).toString() + "%";
+      td.style.width = (100/n_mo).toString() + "%";
 
       if (idx < nday_in_mo) {
 
@@ -163,6 +176,7 @@ function neatcal_default() {
           txt.innerHTML = NEATCAL_PARAM.data[yyyy_mm_dd];
           txt.style.textAlign = "center";
           txt.style.fontWeight = "300";
+          //txt.style.height = '30px';
           td.appendChild(txt);
         }
 
@@ -210,6 +224,7 @@ function neatcal_aligned_weekdays() {
   //   the month starts, so we know how much to skip over when
   //   displaying the aligned cells.
   //
+  let max_start = -1;
   let start_day = NEATCAL_PARAM.start_day;
   let day_in_mo_start = [];
   for (let i=0; i<n_mo; i++) { day_in_mo_start.push(0); }
@@ -218,12 +233,23 @@ function neatcal_aligned_weekdays() {
     let cur_mo = i_mo%12;
     let s = new Date(cur_year, cur_mo, 1).getDay();
     day_in_mo_start[i_mo - start_mo] = s;
+
+    if (day_in_mo_start[i_mo - start_mo] > max_start) {
+      max_start = day_in_mo_start[i_mo - start_mo];
+    }
   }
+
+  console.log(">>", max_start);
 
   let tbody = document.getElementById("ui_tbody");
   for (let idx=0; idx<42; idx++) {
 
     let tr = H.tr();
+    if ((typeof NEATCAL_PARAM.cell_height !== "undefined") &&
+        (NEATCAL_PARAM.cell_height != null) &&
+        (NEATCAL_PARAM.cell_height != "")) {
+      tr.style.height = NEATCAL_PARAM.cell_height;
+    }
 
     let cur_year = year;
     for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
@@ -241,6 +267,7 @@ function neatcal_aligned_weekdays() {
       let day_idx = idx - ((day_in_mo_start[i_mo - start_mo] - start_day + 7)%7);
 
       let td = H.td();
+      td.style.width = (100/n_mo).toString() + "%";
 
       // if our day falls within bounds, we decorate the td with the appropriate
       // values
@@ -268,6 +295,24 @@ function neatcal_aligned_weekdays() {
 
         td.appendChild( span_date );
         td.appendChild( span_day );
+
+        //EXPERIMENT
+        //
+
+        let yyyy_mm_dd = fmt_date(cur_year, cur_mo, idx+1);
+
+        if (yyyy_mm_dd in NEATCAL_PARAM.data) {
+          let txt = H.div();
+          txt.innerHTML = NEATCAL_PARAM.data[yyyy_mm_dd];
+          txt.style.textAlign = "center";
+          txt.style.fontWeight = "300";
+          td.appendChild(txt);
+        }
+
+        //
+        //EXPERIMENT
+
+
 
       }
       tr.appendChild(td);
@@ -300,6 +345,7 @@ function neatcal_init() {
   let n_month_param = sp.get("n_month");
   let start_day_param = sp.get("start_day");
   let highlight_color_param = sp.get("highlight_color");
+  let cell_height_param = sp.get("cell_height");
   let weekday_code_param = sp.get("weekday_code");
   let month_code_param = sp.get("month_code");
 
@@ -311,6 +357,7 @@ function neatcal_init() {
     ui_info.style.display = '';
   }
 
+  //---
 
   let year = new Date().getFullYear();
   if ((year_param != null) &&
@@ -377,6 +424,15 @@ function neatcal_init() {
     }
   }
   NEATCAL_PARAM.highlight_color = highlight_color;
+
+  //---
+
+  let cell_height = NEATCAL_PARAM.cell_height;
+  if ((cell_height_param != null) &&
+      (typeof cell_height_param !== "undefined")) {
+    cell_height = cell_height_param;
+  }
+  NEATCAL_PARAM.cell_height = cell_height;
 
   //---
 
