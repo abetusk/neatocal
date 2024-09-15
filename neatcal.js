@@ -26,6 +26,16 @@ SOFTWARE.
 
 var NEATCAL_PARAM = {
 
+  // experiments with filling in data in cells
+  //
+  "data": { },
+
+  "_data": {
+    "2024-06-01" : "Thule Worm-God of the Lords",
+    "2024-08-11" : "Swarms Matriarch",
+    "2024-10-20" :  "Higher Dimension Being"
+  },
+
   // show info/help screen
   //
   "help" : false,
@@ -76,6 +86,7 @@ var NEATCAL_PARAM = {
 // simple HTML convenience functions
 //
 var H = {
+  "text": function(txt) { return document.createTextNode(txt); },
   "div": function() { return document.createElement("div"); },
   "tr": function() { return document.createElement("tr"); },
   "th": function(v) {
@@ -120,6 +131,8 @@ function neatcal_default() {
 
       let td = H.td();
 
+      td.style.width = (100/12).toString() + "%";
+
       if (idx < nday_in_mo) {
 
         let dt = new Date(cur_year, cur_mo, idx+1);
@@ -140,6 +153,23 @@ function neatcal_default() {
         td.appendChild( span_day );
 
 
+        //EXPERIMENT
+        //
+
+        let yyyy_mm_dd = fmt_date(cur_year, cur_mo, idx+1);
+
+        if (yyyy_mm_dd in NEATCAL_PARAM.data) {
+          let txt = H.div();
+          txt.innerHTML = NEATCAL_PARAM.data[yyyy_mm_dd];
+          txt.style.textAlign = "center";
+          txt.style.fontWeight = "300";
+          td.appendChild(txt);
+        }
+
+        //
+        //EXPERIMENT
+
+
       }
       tr.appendChild(td);
 
@@ -149,6 +179,19 @@ function neatcal_default() {
 
   }
 
+}
+
+function fmt_date(y,m,d) {
+  let res = y.toString() + "-";
+  if (m<10) {
+    res += "0";
+  }
+  res += m.toString() + "-";
+  if (d < 10) {
+    res += "0";
+  }
+  res += d.toString();
+  return res;
 }
 
 function neatcal_aligned_weekdays() {
