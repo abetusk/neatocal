@@ -3,7 +3,7 @@ NeatCal
 
 A neat calendar with the full year on a single page.
 
-Based on the very awesome [Neatnik's Calendar](https://github.com/neatnik/calendar) project.
+Based on the very awesome [Neatnik's Calendar](https://neatnik.net/dispenser/?project=calendar) project.
 
 This is a JavaScript port with added parameters (see below) and designed to be "dependency free" with all files local.
 
@@ -44,6 +44,11 @@ The above parameter list is versatile enough to many options for display. Below 
 | [Non-highlighted calendar](https://abetusk.github.io/neatcal?highlight_color=fff) | Calendar without the weekend highlighting |
 | [Chinese month and day](https://abetusk.github.io/neatcal/?month_code=1%E6%9C%88,2%E6%9C%88,3%E6%9C%88,4%E6%9C%88,5%E6%9C%88,6%E6%9C%88,7%E6%9C%88,8%E6%9C%88,9%E6%9C%88,10%E6%9C%88,11%E6%9C%88,12%E6%9C%88&weekday_code=%E6%97%A5,%E4%B8%80,%E4%BA%8C,%E4%B8%89,%E5%9B%9B,%E4%BA%94,%E5%85%AD) | Calendar with (simplified) Chinese month and day abbreviations (thanks to [myway42](https://github.com/myway42/calendar)) |
 | [Two year calendar](https://abetusk.github.io/neatcal?n_month=24&layout=aligned-weekdays&start_day=0) | Two year single page calendar |
+
+Misc
+---
+
+Neatnik's original repo has [since moved](https://neatnik.net/dispenser/?project=calendar) but the legacy GitHub repo can be found [here](https://neatnik.net/dispenser/?project=calendar).
 
 License
 ---
