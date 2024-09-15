@@ -376,8 +376,6 @@ function neatcal_init() {
   let s_year = parseInt(NEATCAL_PARAM.year);
   let e_year = parseInt(NEATCAL_PARAM.year) + Math.floor((cur_start_month + month_remain-1)/12)
 
-  console.log(s_year, e_year);
-
   let year_fraction_tot = 0;
   let year_fraction = [];
   for ( let y = s_year; y <= e_year; y++ ) {
