@@ -1,7 +1,7 @@
-Neatcal
+NeatCal
 ===
 
-A calendar with the full year on a single page.
+A neat calendar with the full year on a single page.
 
 Based on the very awesome [Neatnik's Calendar](https://github.com/neatnik/calendar) project.
 
@@ -31,6 +31,19 @@ Parameters
 | `month_code` | Comma separated list of month codes to use (default `Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec`). Elements can be blank if no month code is wanted. | [...?month_code=J,F,M,A,M,J,J,A,S,O,N,D](https://abetusk.github.io/neatcal?month_code=J,F,M,A,M,J,J,A,S,O,N,D) |
 | `help` | Show help screen  | [...?help](https://abetusk.github.io/neatcal?help) |
 
+Presets
+---
+
+The above parameter list is versatile enough to many options for display. Below is an abreviated list of presets that might be useful to people.
+
+| Preset | Description |
+|---|---|
+| [Color and aligned](https://abetusk.github.io/neatcal?layout=aligned-weekdays&highlight_color=fee) | Calendar with aligned days and red highlighted weekends |
+| [Academic calendar](https://abetusk.github.io/neatcal?start_month=7) | An "academic calendar" that starts on Sept and runs through to August of the following year |
+| Half Page [left](https://abetusk.github.io/neatcal?n_month=6) and [right](https://abetusk.github.io/neatcal?start_month=6&n_month=6) calendars | Two half page (6 months) calendars |
+| [Non-highlighted calendar](https://abetusk.github.io/neatcal?highlight_color=fff) | Calendar without the weekend highlighting |
+| [Chinese month and day](https://abetusk.github.io/neatcal/?month_code=1%E6%9C%88,2%E6%9C%88,3%E6%9C%88,4%E6%9C%88,5%E6%9C%88,6%E6%9C%88,7%E6%9C%88,8%E6%9C%88,9%E6%9C%88,10%E6%9C%88,11%E6%9C%88,12%E6%9C%88&weekday_code=%E6%97%A5,%E4%B8%80,%E4%BA%8C,%E4%B8%89,%E5%9B%9B,%E4%BA%94,%E5%85%AD) | Calendar with (simplified) Chinese month and day abbreviations (thanks to [myway42](https://github.com/myway42/calendar)) |
+| [Four year calendar](https://abetusk.github.io/neatcal?n_month=48) | Four year single page calendar |
 
 License
 ---

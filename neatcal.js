@@ -152,9 +152,9 @@ function neatcal_default() {
 }
 
 function neatcal_aligned_weekdays() {
-  let year      = NEATCAL_PARAM.year;
-  let start_mo  = NEATCAL_PARAM.start_month;
-  let n_mo      = NEATCAL_PARAM.n_month;
+  let year      = parseInt(NEATCAL_PARAM.year);
+  let start_mo  = parseInt(NEATCAL_PARAM.start_month);
+  let n_mo      = parseInt(NEATCAL_PARAM.n_month);
 
   let ui_tr_mo = document.getElementById("ui_tr_month_name");
   ui_tr_mo.innerHTML = "";
@@ -162,27 +162,22 @@ function neatcal_aligned_weekdays() {
     ui_tr_mo.appendChild( H.th( NEATCAL_PARAM.month_code[ i_mo%12 ] ) );
   }
 
-  // monday start day
+  // start_day, when to start the first day in the month.
+  // day_in_mo_start is the number of days past the start_day
+  //   the month starts, so we know how much to skip over when
+  //   displaying the aligned cells.
   //
   let start_day = NEATCAL_PARAM.start_day;
   let day_in_mo_start = [];
   for (let i=0; i<n_mo; i++) { day_in_mo_start.push(0); }
-
   for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
-    //let cur_year = year;
-    //if (i_mo >= 12) { cur_year = parseInt(year)+1; }
     let cur_year = parseInt(year) + Math.floor(i_mo/12);
-
     let cur_mo = i_mo%12;
-
     let s = new Date(cur_year, cur_mo, 1).getDay();
-    day_in_mo_start[cur_mo] = s;
+    day_in_mo_start[i_mo - start_mo] = s;
   }
 
   let tbody = document.getElementById("ui_tbody");
-
-  let tr_a = [];
-
   for (let idx=0; idx<42; idx++) {
 
     let tr = H.tr();
@@ -190,37 +185,46 @@ function neatcal_aligned_weekdays() {
     let cur_year = year;
     for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
 
-      //if (i_mo >= 12) { cur_year = parseInt(year)+1; }
       cur_year = parseInt(year) + Math.floor(i_mo/12);
 
+      // cur_mo is the month in the current year
+      // nday_in_mo is the number of days in the month under consideration
+      // day_idx is the day of the month this cell would fall in,
+      //  which can be out of bounds (less than 0 or greater than the number of
+      //  days in the month)
+      //
       let cur_mo = i_mo%12;
-
       let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
+      let day_idx = idx - ((day_in_mo_start[i_mo - start_mo] - start_day + 7)%7);
 
       let td = H.td();
 
-      let day_idx = idx - ((day_in_mo_start[cur_mo] - start_day + 7)%7);
-
+      // if our day falls within bounds, we decorate the td with the appropriate
+      // values
+      //
       if ((day_idx >= 0) &&
           (day_idx < nday_in_mo)) {
 
         let dt = new Date(cur_year, cur_mo, day_idx+1);
 
-        let d = NEATCAL_PARAM.weekday_code[ dt.getDay() ];
+        let wd_code = NEATCAL_PARAM.weekday_code[ dt.getDay() ];
 
-        //if (d[0] == "S") { td.classList.add("weekend"); }
+        // If it's a weekend (Su,Sa), add the 'weekend' class to allow for highlighting
+        //
         if ((dt.getDay() == 0) ||
             (dt.getDay() == 6)) {
           td.classList.add("weekend");
         }
 
 
+        // date - day in month
+        // day  - name of weekday (e.g. Su,M,T,W,R,F,Sa)
+        //
         let span_date = H.span((day_idx+1).toString(), "date");
-        let span_day = H.span(d, "day");
+        let span_day = H.span(wd_code, "day");
 
         td.appendChild( span_date );
         td.appendChild( span_day );
-
 
       }
       tr.appendChild(td);
@@ -228,7 +232,6 @@ function neatcal_aligned_weekdays() {
     }
 
     tbody.appendChild(tr);
-
   }
 
 }
