@@ -111,7 +111,7 @@ var H = {
   }
 };
 
-function neatcal_default() {
+function neatocal_default() {
   let year      = NEATCAL_PARAM.year;
   let start_mo  = NEATCAL_PARAM.start_month;
   let n_mo      = NEATCAL_PARAM.n_month;
@@ -208,7 +208,7 @@ function fmt_date(y,m,d) {
   return res;
 }
 
-function neatcal_aligned_weekdays() {
+function neatocal_aligned_weekdays() {
   let year      = parseInt(NEATCAL_PARAM.year);
   let start_mo  = parseInt(NEATCAL_PARAM.start_month);
   let n_mo      = parseInt(NEATCAL_PARAM.n_month);
@@ -324,7 +324,7 @@ function neatcal_aligned_weekdays() {
 
 }
 
-function neatcal_post_process() {
+function neatocal_post_process() {
   let highlight_color = NEATCAL_PARAM.highlight_color;
   let x = document.getElementsByClassName("weekend");
   for (let i = 0; i < x.length; i++) {
@@ -332,7 +332,7 @@ function neatcal_post_process() {
   }
 }
 
-function neatcal_init() {
+function neatocal_init() {
   let sp = new URLSearchParams(window.location.search);
 
   // peel off parameters from URL
@@ -512,13 +512,13 @@ function neatcal_init() {
   //---
 
   if (layout == "aligned-weekdays") {
-    neatcal_aligned_weekdays();
+    neatocal_aligned_weekdays();
   }
   else {
-    neatcal_default();
+    neatocal_default();
   }
 
 
-  neatcal_post_process();
+  neatocal_post_process();
 }
 
