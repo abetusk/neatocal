@@ -24,10 +24,12 @@ SOFTWARE.
 
 */
 
-var NEATCAL_PARAM = {
+var NEATOCAL_PARAM = {
 
   // experiments with filling in data in cells
   //
+  "data_fn": "",
+
   "data": { },
   "_data": {
     "2024-03-21" : "The quick brown fox jumps over the lazy yellow dog",
@@ -112,24 +114,24 @@ var H = {
 };
 
 function neatocal_default() {
-  let year      = NEATCAL_PARAM.year;
-  let start_mo  = NEATCAL_PARAM.start_month;
-  let n_mo      = NEATCAL_PARAM.n_month;
+  let year      = NEATOCAL_PARAM.year;
+  let start_mo  = NEATOCAL_PARAM.start_month;
+  let n_mo      = NEATOCAL_PARAM.n_month;
 
   let ui_tr_mo = document.getElementById("ui_tr_month_name");
   ui_tr_mo.innerHTML = "";
   for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
-    ui_tr_mo.appendChild( H.th( NEATCAL_PARAM.month_code[ i_mo%12 ] ) );
+    ui_tr_mo.appendChild( H.th( NEATOCAL_PARAM.month_code[ i_mo%12 ] ) );
   }
 
   let tbody = document.getElementById("ui_tbody");
   for (let idx=0; idx<31; idx++) {
 
     let tr = H.tr();
-    if ((typeof NEATCAL_PARAM.cell_height !== "undefined") &&
-        (NEATCAL_PARAM.cell_height != null) &&
-        (NEATCAL_PARAM.cell_height != "")) {
-      tr.style.height = NEATCAL_PARAM.cell_height;
+    if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
+        (NEATOCAL_PARAM.cell_height != null) &&
+        (NEATOCAL_PARAM.cell_height != "")) {
+      tr.style.height = NEATOCAL_PARAM.cell_height;
     }
 
 
@@ -150,7 +152,7 @@ function neatocal_default() {
 
         let dt = new Date(cur_year, cur_mo, idx+1);
 
-        let d = NEATCAL_PARAM.weekday_code[ dt.getDay() ];
+        let d = NEATOCAL_PARAM.weekday_code[ dt.getDay() ];
 
         //if (d[0] == "S") { td.classList.add("weekend"); }
         if ((dt.getDay() == 0) ||
@@ -171,9 +173,9 @@ function neatocal_default() {
 
         let yyyy_mm_dd = fmt_date(cur_year, cur_mo, idx+1);
 
-        if (yyyy_mm_dd in NEATCAL_PARAM.data) {
+        if (yyyy_mm_dd in NEATOCAL_PARAM.data) {
           let txt = H.div();
-          txt.innerHTML = NEATCAL_PARAM.data[yyyy_mm_dd];
+          txt.innerHTML = NEATOCAL_PARAM.data[yyyy_mm_dd];
           txt.style.textAlign = "center";
           txt.style.fontWeight = "300";
           //txt.style.height = '30px';
@@ -209,14 +211,14 @@ function fmt_date(y,m,d) {
 }
 
 function neatocal_aligned_weekdays() {
-  let year      = parseInt(NEATCAL_PARAM.year);
-  let start_mo  = parseInt(NEATCAL_PARAM.start_month);
-  let n_mo      = parseInt(NEATCAL_PARAM.n_month);
+  let year      = parseInt(NEATOCAL_PARAM.year);
+  let start_mo  = parseInt(NEATOCAL_PARAM.start_month);
+  let n_mo      = parseInt(NEATOCAL_PARAM.n_month);
 
   let ui_tr_mo = document.getElementById("ui_tr_month_name");
   ui_tr_mo.innerHTML = "";
   for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
-    ui_tr_mo.appendChild( H.th( NEATCAL_PARAM.month_code[ i_mo%12 ] ) );
+    ui_tr_mo.appendChild( H.th( NEATOCAL_PARAM.month_code[ i_mo%12 ] ) );
   }
 
   // start_day, when to start the first day in the month.
@@ -225,7 +227,7 @@ function neatocal_aligned_weekdays() {
   //   displaying the aligned cells.
   //
   let max_start = -1;
-  let start_day = NEATCAL_PARAM.start_day;
+  let start_day = NEATOCAL_PARAM.start_day;
   let day_in_mo_start = [];
   for (let i=0; i<n_mo; i++) { day_in_mo_start.push(0); }
   for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
@@ -239,16 +241,14 @@ function neatocal_aligned_weekdays() {
     }
   }
 
-  console.log(">>", max_start);
-
   let tbody = document.getElementById("ui_tbody");
   for (let idx=0; idx<42; idx++) {
 
     let tr = H.tr();
-    if ((typeof NEATCAL_PARAM.cell_height !== "undefined") &&
-        (NEATCAL_PARAM.cell_height != null) &&
-        (NEATCAL_PARAM.cell_height != "")) {
-      tr.style.height = NEATCAL_PARAM.cell_height;
+    if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
+        (NEATOCAL_PARAM.cell_height != null) &&
+        (NEATOCAL_PARAM.cell_height != "")) {
+      tr.style.height = NEATOCAL_PARAM.cell_height;
     }
 
     let cur_year = year;
@@ -277,7 +277,7 @@ function neatocal_aligned_weekdays() {
 
         let dt = new Date(cur_year, cur_mo, day_idx+1);
 
-        let wd_code = NEATCAL_PARAM.weekday_code[ dt.getDay() ];
+        let wd_code = NEATOCAL_PARAM.weekday_code[ dt.getDay() ];
 
         // If it's a weekend (Su,Sa), add the 'weekend' class to allow for highlighting
         //
@@ -301,9 +301,9 @@ function neatocal_aligned_weekdays() {
 
         let yyyy_mm_dd = fmt_date(cur_year, cur_mo, idx+1);
 
-        if (yyyy_mm_dd in NEATCAL_PARAM.data) {
+        if (yyyy_mm_dd in NEATOCAL_PARAM.data) {
           let txt = H.div();
-          txt.innerHTML = NEATCAL_PARAM.data[yyyy_mm_dd];
+          txt.innerHTML = NEATOCAL_PARAM.data[yyyy_mm_dd];
           txt.style.textAlign = "center";
           txt.style.fontWeight = "300";
           td.appendChild(txt);
@@ -325,11 +325,86 @@ function neatocal_aligned_weekdays() {
 }
 
 function neatocal_post_process() {
-  let highlight_color = NEATCAL_PARAM.highlight_color;
+  let highlight_color = NEATOCAL_PARAM.highlight_color;
   let x = document.getElementsByClassName("weekend");
   for (let i = 0; i < x.length; i++) {
     x[i].style.background = highlight_color;
   }
+}
+
+function neatocal_grab_data(fn) {
+
+
+}
+
+function _load(url, _cb, _errcb) {
+  let xhr = new XMLHttpRequest();
+
+  if (typeof _errcb !== "undefined") {
+    xhr.addEventListener("error", _errcb);
+  }
+
+  xhr.addEventListener("loadend", _cb);
+  xhr.open("GET", url);
+  xhr.send();
+  return xhr;
+}
+
+function neatocal_parse_data_error(raw) {
+  console.log("error:", raw);
+}
+
+function neatocal_override_param(param, data) {
+
+  let admissible_param = [
+    "year", "start_month", "n_month", "layout",
+    "start_day", "highlight_color", "weekday_code", "month_code",
+    "cell_height", "help"
+  ];
+
+  for (let idx = 0; idx < admissible_param.length; idx++) {
+    let key = admissible_param[idx];
+
+    if (key in data) {
+      param[key] = data[key];
+    }
+  }
+
+  return param;
+}
+
+function neatocal_parse_data(raw) {
+
+  if (raw.type == "loadend") {
+
+    if ((raw.target.readyState == 4) &&
+        (raw.target.status == 200)) {
+
+      try {
+        let json_data = JSON.parse(raw.target.response);
+        NEATOCAL_PARAM.data = json_data;
+
+        if (typeof NEATOCAL_PARAM.data.param !== "undefined") {
+          neatocal_override_param(NEATOCAL_PARAM, NEATOCAL_PARAM.data.param);
+        }
+      }
+      catch (e) {
+        console.log("error parsing data file:", e);
+      }
+
+      neatocal_render();
+
+    }
+
+    // default to render
+    //
+    if ((raw.target.readyState == 4) &&
+        (raw.target.status == 404)) {
+      neatocal_render();
+    }
+
+  }
+
 }
 
 function neatocal_init() {
@@ -349,6 +424,17 @@ function neatocal_init() {
   let weekday_code_param = sp.get("weekday_code");
   let month_code_param = sp.get("month_code");
 
+  let datafn_param = sp.get("data");
+
+  //---
+
+  let data_fn = "";
+  if ((datafn_param != null) &&
+      (typeof datafn_param !== "undefined")) {
+    data_fn = datafn_param;
+  }
+  NEATOCAL_PARAM.data_fn = data_fn;
+
   //---
 
   if ((help_param != null) &&
@@ -364,22 +450,22 @@ function neatocal_init() {
       (typeof year_param !== "undefined")) {
     year = year_param;
   }
-  NEATCAL_PARAM.year = year;
+  NEATOCAL_PARAM.year = year;
 
   //---
 
-  let layout = NEATCAL_PARAM.layout;
+  let layout = NEATOCAL_PARAM.layout;
   if ((layout_param != null) &&
       (typeof layout_param !== "undefined")) {
     _l = sp.get("layout");
     if      (_l == "default")         { layout = "default"; }
     else if (_l == "aligned-weekdays") { layout = "aligned-weekdays"; }
   }
-  NEATCAL_PARAM.layout = layout;
+  NEATOCAL_PARAM.layout = layout;
 
   //---
 
-  let start_month = NEATCAL_PARAM.start_month;
+  let start_month = NEATOCAL_PARAM.start_month;
   if ((start_month_param != null) &&
       (typeof start_month_param !== "undefined")) {
     start_month = parseInt(start_month_param);
@@ -387,11 +473,11 @@ function neatocal_init() {
       start_month = 0;
     }
   }
-  NEATCAL_PARAM.start_month = start_month;
+  NEATOCAL_PARAM.start_month = start_month;
 
   //---
 
-  let n_month = NEATCAL_PARAM.n_month;
+  let n_month = NEATOCAL_PARAM.n_month;
   if ((n_month_param != null) &&
       (typeof n_month_param !== "undefined")) {
     n_month = parseInt(n_month_param);
@@ -399,11 +485,11 @@ function neatocal_init() {
       n_month = 0;
     }
   }
-  NEATCAL_PARAM.n_month = n_month;
+  NEATOCAL_PARAM.n_month = n_month;
 
   //---
 
-  let start_day = NEATCAL_PARAM.start_day;
+  let start_day = NEATOCAL_PARAM.start_day;
   if ((start_day_param != null) &&
       (typeof start_day_param !== "undefined")) {
     start_day = parseInt(start_day_param);
@@ -411,11 +497,11 @@ function neatocal_init() {
       start_day = 0;
     }
   }
-  NEATCAL_PARAM.start_day = start_day;
+  NEATOCAL_PARAM.start_day = start_day;
 
   //---
 
-  let highlight_color = NEATCAL_PARAM.highlight_color;
+  let highlight_color = NEATOCAL_PARAM.highlight_color;
   if ((highlight_color_param != null) &&
       (typeof highlight_color_param !== "undefined")) {
     highlight_color = highlight_color_param;
@@ -423,20 +509,20 @@ function neatocal_init() {
       highlight_color = "#" + highlight_color;
     }
   }
-  NEATCAL_PARAM.highlight_color = highlight_color;
+  NEATOCAL_PARAM.highlight_color = highlight_color;
 
   //---
 
-  let cell_height = NEATCAL_PARAM.cell_height;
+  let cell_height = NEATOCAL_PARAM.cell_height;
   if ((cell_height_param != null) &&
       (typeof cell_height_param !== "undefined")) {
     cell_height = cell_height_param;
   }
-  NEATCAL_PARAM.cell_height = cell_height;
+  NEATOCAL_PARAM.cell_height = cell_height;
 
   //---
 
-  let weekday_code = NEATCAL_PARAM.weekday_code;
+  let weekday_code = NEATOCAL_PARAM.weekday_code;
   if ((weekday_code_param != null) &&
       (typeof weekday_code_param !== "undefined")) {
 
@@ -449,11 +535,11 @@ function neatocal_init() {
     }
 
   }
-  NEATCAL_PARAM.weekday_code = weekday_code;
+  NEATOCAL_PARAM.weekday_code = weekday_code;
 
   //---
 
-  let month_code = NEATCAL_PARAM.month_code;
+  let month_code = NEATOCAL_PARAM.month_code;
   if ((month_code_param != null) &&
       (typeof month_code_param !== "undefined")) {
 
@@ -466,14 +552,32 @@ function neatocal_init() {
     }
 
   }
-  NEATCAL_PARAM.month_code = month_code;
+  NEATOCAL_PARAM.month_code = month_code;
 
   //---
 
-  let cur_start_month = NEATCAL_PARAM.start_month;
-  let month_remain = NEATCAL_PARAM.n_month;
-  let s_year = parseInt(NEATCAL_PARAM.year);
-  let e_year = parseInt(NEATCAL_PARAM.year) + Math.floor((cur_start_month + month_remain-1)/12)
+  // if we have a data file, short circuit to wait till load.
+  // neatocal_parse_data will call neatocal_render to render the
+  // calendar.
+  //
+  if (NEATOCAL_PARAM.data_fn) {
+    _load( NEATOCAL_PARAM.data_fn, neatocal_parse_data, neatocal_parse_data_error );
+    return;
+  }
+
+  // no data file, just render
+  //
+  neatocal_render();
+}
+
+function neatocal_render() {
+
+  let cur_start_month = NEATOCAL_PARAM.start_month;
+  let month_remain = NEATOCAL_PARAM.n_month;
+  let s_year = parseInt(NEATOCAL_PARAM.year);
+  let e_year = parseInt(NEATOCAL_PARAM.year) + Math.floor((cur_start_month + month_remain-1)/12)
+
+  let layout = NEATOCAL_PARAM.layout;
 
   let year_fraction_tot = 0;
   let year_fraction = [];
@@ -517,7 +621,6 @@ function neatocal_init() {
   else {
     neatocal_default();
   }
-
 
   neatocal_post_process();
 }
