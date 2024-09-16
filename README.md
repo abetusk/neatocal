@@ -58,6 +58,11 @@ The format is:
 {
   "param" {
     ...
+    "color_cell" : [
+      { "date":"YYYY-MM-DD", "color":"#rgb" },
+      ...
+      { "date":"YYYY-MM-DD", "color":"#rgb" }
+    ]
   },
   "YYYY-MM-DD" : "text",
   ...
@@ -82,8 +87,12 @@ The file [example/data.json](example/data.json) provides an example:
 }
 ```
 
+
 The admissible parameters in the `"param" : {}` section have the same name as the URL parameters.
 If a parameter is specified in the data file, they will override any parameters provided in the URL.
+
+`color_cell` allows for individual cell highlighting ([example](https://abetusk.github.io/neatocal?data=example/sched.json)).
+See [example/sched.json](example/sched.json) for the example data file with the `color_cell` array.
 
 If the file is not present or isn't able to be parsed, the render will continue as the data file isn't present.
 

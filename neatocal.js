@@ -39,6 +39,8 @@ var NEATOCAL_PARAM = {
     "2024-10-20" :  "Higher Dimension Being"
   },
 
+  "color_cell": [],
+
   // Putting data in cells can alter the cell/row height,
   // so we allow a user parameter to fiddle with cell height.
   // The parameter here is directly applied to the `tr` style,
@@ -147,6 +149,7 @@ function neatocal_default() {
 
       let td = H.td();
       td.style.width = (100/n_mo).toString() + "%";
+      td.id = "ui_" + fmt_date(cur_year, cur_mo+1, idx+1);
 
       if (idx < nday_in_mo) {
 
@@ -167,24 +170,14 @@ function neatocal_default() {
         td.appendChild( span_date );
         td.appendChild( span_day );
 
-
-        //EXPERIMENT
-        //
-
-        let yyyy_mm_dd = fmt_date(cur_year, cur_mo, idx+1);
-
+        let yyyy_mm_dd = fmt_date(cur_year, cur_mo+1, idx+1);
         if (yyyy_mm_dd in NEATOCAL_PARAM.data) {
           let txt = H.div();
           txt.innerHTML = NEATOCAL_PARAM.data[yyyy_mm_dd];
           txt.style.textAlign = "center";
           txt.style.fontWeight = "300";
-          //txt.style.height = '30px';
           td.appendChild(txt);
         }
-
-        //
-        //EXPERIMENT
-
 
       }
       tr.appendChild(td);
@@ -268,6 +261,7 @@ function neatocal_aligned_weekdays() {
 
       let td = H.td();
       td.style.width = (100/n_mo).toString() + "%";
+      td.id = "ui_" + fmt_date(cur_year, cur_mo+1, day_idx+1);
 
       // if our day falls within bounds, we decorate the td with the appropriate
       // values
@@ -296,11 +290,7 @@ function neatocal_aligned_weekdays() {
         td.appendChild( span_date );
         td.appendChild( span_day );
 
-        //EXPERIMENT
-        //
-
-        let yyyy_mm_dd = fmt_date(cur_year, cur_mo, idx+1);
-
+        let yyyy_mm_dd = fmt_date(cur_year, cur_mo+1, day_idx+1);
         if (yyyy_mm_dd in NEATOCAL_PARAM.data) {
           let txt = H.div();
           txt.innerHTML = NEATOCAL_PARAM.data[yyyy_mm_dd];
@@ -308,11 +298,6 @@ function neatocal_aligned_weekdays() {
           txt.style.fontWeight = "300";
           td.appendChild(txt);
         }
-
-        //
-        //EXPERIMENT
-
-
 
       }
       tr.appendChild(td);
@@ -330,14 +315,19 @@ function neatocal_post_process() {
   for (let i = 0; i < x.length; i++) {
     x[i].style.background = highlight_color;
   }
+
+  if ("color_cell" in NEATOCAL_PARAM) {
+    let color_cell = NEATOCAL_PARAM.color_cell;
+
+    for (let i=0; i < color_cell.length; i++) {
+      let ele = document.getElementById("ui_" + color_cell[i].date);
+      if ((typeof ele === "undefined") || (ele == null)) { continue; }
+      ele.style.background = color_cell[i].color;
+    }
+  }
 }
 
-function neatocal_grab_data(fn) {
-
-
-}
-
-function _load(url, _cb, _errcb) {
+function loadXHR(url, _cb, _errcb) {
   let xhr = new XMLHttpRequest();
 
   if (typeof _errcb !== "undefined") {
@@ -368,6 +358,10 @@ function neatocal_override_param(param, data) {
     if (key in data) {
       param[key] = data[key];
     }
+  }
+
+  if ("color_cell" in data) {
+    param.color_cell = data.color_cell;
   }
 
   return param;
@@ -561,7 +555,7 @@ function neatocal_init() {
   // calendar.
   //
   if (NEATOCAL_PARAM.data_fn) {
-    _load( NEATOCAL_PARAM.data_fn, neatocal_parse_data, neatocal_parse_data_error );
+    loadXHR( NEATOCAL_PARAM.data_fn, neatocal_parse_data, neatocal_parse_data_error );
     return;
   }
 
