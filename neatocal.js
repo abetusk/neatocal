@@ -1892,3 +1892,199 @@ function neatocal_render() {
 
   neatocal_post_process();
 }
+
+// === Compact Calendar / Candybar layout (layout=compact-calendar) ===
+// Works with NeatoCal "param" + "YYYY-MM-DD":"text" data file format. :contentReference[oaicite:1]{index=1}
+
+function _nc_isoWeekInfoUTC(dateUTC) {
+  // dateUTC: Date in UTC context
+  const d = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getUTCMonth(), dateUTC.getUTCDate()));
+  // Thursday decides ISO year
+  const day = d.getUTCDay() || 7; // 1..7 (Mon..Sun)
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return { year: d.getUTCFullYear(), week };
+}
+
+function _nc_startOfISOWeekUTC(year) {
+  // Monday of ISO week containing Jan 4
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const day = jan4.getUTCDay() || 7; // 1..7
+  jan4.setUTCDate(jan4.getUTCDate() - (day - 1));
+  return jan4; // Monday (UTC)
+}
+
+function _nc_ymdUTC(d) {
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
+}
+
+function _nc_parseColorCell(param) {
+  const map = new Map();
+  const arr = (param && Array.isArray(param.color_cell)) ? param.color_cell : [];
+  for (const item of arr) {
+    if (item && typeof item.date === "string" && typeof item.color === "string") {
+      map.set(item.date, item.color);
+    }
+  }
+  return map;
+}
+
+function _nc_findCalendarRoot() {
+  // Be forgiving across forks / html variants:
+  return (
+    document.getElementById("calendar") ||
+    document.getElementById("cal") ||
+    document.getElementById("neatocal") ||
+    document.querySelector("[data-neatocal-root]") ||
+    document.body
+  );
+}
+
+function renderCompactCalendar(param, dataObj) {
+  const year = Number(param.year);
+  if (!Number.isFinite(year)) return;
+
+  const language = (param.language && String(param.language)) || "en";
+  const weekendDays = (param.weekend_days ? String(param.weekend_days) : "0,6")
+    .split(",").map(s => Number(s.trim())).filter(n => Number.isFinite(n));
+
+  const highlightColor = (param.highlight_color && String(param.highlight_color)) || "#eee";
+  const todayHighlight = (param.today_highlight_color && String(param.today_highlight_color)) || null;
+
+  const showWeekNumbers = String(param.show_week_numbers || "false") === "true";
+  const showNotes = String(param.compact_notes ?? "true") === "true";
+  const notesWidth = String(param.compact_notes_width ?? "28%");
+  const cellHeight = String(param.compact_cell_height ?? "10.5px");
+
+  const colorMap = _nc_parseColorCell(param);
+
+  // Weekday headers Mon..Sun, pinned to UTC so labels don't shift
+  const weekdayNames = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(Date.UTC(2024, 0, 1 + i)); // 2024-01-01 is Monday
+    weekdayNames.push(d.toLocaleDateString(language, { weekday: "short", timeZone: "UTC" }));
+  }
+
+  // Determine number of ISO week rows (52 or 53)
+  const firstWeekMonday = _nc_startOfISOWeekUTC(year);
+  const dec28 = new Date(Date.UTC(year, 11, 28));
+  const rows = _nc_isoWeekInfoUTC(dec28).week;
+
+  const root = _nc_findCalendarRoot();
+  root.classList.add("compact-calendar");
+  root.style.setProperty("--compact-notes-width", notesWidth);
+  root.style.setProperty("--compact-cell-height", cellHeight);
+
+  const wrap = document.createElement("div");
+  wrap.className = "compact-wrap";
+
+  const table = document.createElement("table");
+  table.className = "compact-grid";
+
+  const thead = document.createElement("thead");
+  const trHead = document.createElement("tr");
+
+  const thWeek = document.createElement("th");
+  thWeek.className = "cc-weeknum";
+  thWeek.textContent = showWeekNumbers ? "Wk" : "";
+  trHead.appendChild(thWeek);
+
+  for (let i = 0; i < 7; i++) {
+    const th = document.createElement("th");
+    th.textContent = weekdayNames[i];
+    trHead.appendChild(th);
+  }
+  thead.appendChild(trHead);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+
+  // Today key (local) for outline only; safe if different timezone
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+  for (let w = 1; w <= rows; w++) {
+    const tr = document.createElement("tr");
+
+    const tdW = document.createElement("td");
+    tdW.className = "cc-weeknum";
+    tdW.textContent = showWeekNumbers ? String(w) : "";
+    tr.appendChild(tdW);
+
+    for (let dow = 0; dow < 7; dow++) {
+      const td = document.createElement("td");
+      td.className = "cc-day";
+
+      const d = new Date(firstWeekMonday);
+      d.setUTCDate(d.getUTCDate() + (w - 1) * 7 + dow);
+
+      const key = _nc_ymdUTC(d);
+      const inYear = (d.getUTCFullYear() === year);
+
+      const dot = document.createElement("div");
+      dot.className = "cc-dot";
+
+      if (inYear) {
+        const jsDow = d.getUTCDay(); // 0..6
+        if (weekendDays.includes(jsDow)) dot.style.background = highlightColor;
+        if (colorMap.has(key)) dot.style.background = colorMap.get(key);
+        if (key.endsWith("-01") && !key.startsWith(`${year}-01`)) td.classList.add("cc-month-sep");
+
+        if (todayHighlight && key === todayKey) {
+          dot.style.background = todayHighlight;
+          td.classList.add("cc-today");
+        }
+      } else {
+        dot.style.background = "transparent";
+      }
+
+      td.appendChild(dot);
+
+      // Day label from data file (your holiday names, etc.)
+      if (inYear && dataObj && typeof dataObj[key] === "string" && dataObj[key].trim().length) {
+        const lbl = document.createElement("div");
+        lbl.className = "cc-label";
+        lbl.textContent = dataObj[key];
+        td.appendChild(lbl);
+      }
+
+      tr.appendChild(td);
+    }
+
+    tbody.appendChild(tr);
+  }
+
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+
+  if (showNotes) {
+    const notes = document.createElement("div");
+    notes.className = "compact-notes";
+
+    const title = document.createElement("div");
+    title.className = "notes-title";
+    title.textContent = String(year);
+
+    const lines = document.createElement("div");
+    lines.className = "notes-lines";
+
+    notes.appendChild(title);
+    notes.appendChild(lines);
+    wrap.appendChild(notes);
+  }
+
+  root.innerHTML = "";
+  root.appendChild(wrap);
+}
+
+function maybeRenderCompact(param, dataObj) {
+  if (String(param.layout) === "compact-calendar") {
+    renderCompactCalendar(param, dataObj);
+    return true;
+  }
+  return false;
+}
