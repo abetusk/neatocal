@@ -171,6 +171,11 @@ Misc
 
 Neatnik's original repo can be found at [source.tube/neatnik/calendar](https://source.tube/neatnik/calendar).
 
+Compact Calendar
+---
+https://github.com/fredrocks/neatocal?layout=compact-calendar&data=example/ie-co-2026.json
+https://github.io/fredrocks/neatocal?layout=compact-calendar&data=example/ie-co-2026.json
+
 License
 ---
 
