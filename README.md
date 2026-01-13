@@ -136,6 +136,9 @@ The file [example/data.json](example/data.json) provides an example:
 }
 ```
 
+The file [example/ie-co-2026.json](example/ie-co-2026.json) provides a combined Colombia and Ireland
+holiday schedule for 2026 ([compact calendar example](https://abetusk.github.io/neatocal?layout=compact-calendar&data=example/ie-co-2026.json)).
+
 
 The admissible parameters in the `"param" : {}` section have the same name as the URL parameters.
 If a parameter is specified in the data file, they will override any parameters provided in the URL.
