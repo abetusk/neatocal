@@ -1,0 +1,33 @@
+{
+  "param": {
+    "year": 2026,
+    "layout": "compact-calendar"
+  },
+  "2026-01-01": "Colombia: New Year's Day / Ireland: New Year's Day",
+  "2026-01-12": "Colombia: Epiphany",
+  "2026-02-02": "Ireland: St Brigid's Day",
+  "2026-03-17": "Ireland: St Patrick's Day",
+  "2026-03-23": "Colombia: Saint Joseph's Day",
+  "2026-04-02": "Colombia: Maundy Thursday",
+  "2026-04-03": "Colombia: Good Friday",
+  "2026-04-06": "Ireland: Easter Monday",
+  "2026-05-01": "Colombia: Labor Day",
+  "2026-05-04": "Ireland: May Day",
+  "2026-05-18": "Colombia: Ascension Day",
+  "2026-06-01": "Ireland: June Bank Holiday",
+  "2026-06-08": "Colombia: Corpus Christi",
+  "2026-06-15": "Colombia: Sacred Heart",
+  "2026-06-29": "Colombia: Saints Peter and Paul",
+  "2026-07-20": "Colombia: Independence Day",
+  "2026-08-03": "Ireland: August Bank Holiday",
+  "2026-08-07": "Colombia: Battle of Boyacá",
+  "2026-08-17": "Colombia: Assumption of Mary",
+  "2026-10-12": "Colombia: Columbus Day",
+  "2026-10-26": "Ireland: October Bank Holiday",
+  "2026-11-02": "Colombia: All Saints' Day",
+  "2026-11-16": "Colombia: Independence of Cartagena",
+  "2026-12-08": "Colombia: Immaculate Conception",
+  "2026-12-25": "Colombia: Christmas Day / Ireland: Christmas Day",
+  "2026-12-26": "Ireland: St Stephen's Day",
+  "2026-12-28": "Ireland: St Stephen's Day (Observed)"
+}
