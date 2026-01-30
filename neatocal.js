@@ -35,6 +35,8 @@ var NEATOCAL_PARAM = {
   "ics_imports": [],
   "ics": false,
 
+  "firefox_hack": true,
+
   "color_cell": [],
 
   // Putting data in cells can alter the cell/row height,
@@ -129,6 +131,8 @@ var NEATOCAL_PARAM = {
   // show week numbers
   //
   "show_week_numbers": false,
+
+  "font_family": '',
 
   // fiddly parameters
   //
@@ -939,6 +943,22 @@ function neatocal_post_process() {
       ele.style.background = color_cell[i].color;
     }
   }
+
+  if (NEATOCAL_PARAM.firefox_hack) {
+
+    if ((typeof navigator !== "undefined") &&
+        (typeof navigator.userAgent !== "undefined") &&
+        (navigator.userAgent.search( /^Mozilla/ ) == 0) &&
+        (typeof screen !== "undefined") &&
+        (screen.width < 768) ) {
+
+      let ui_tr_month_name = document.getElementById("ui_tr_month_name");
+      if (NEATOCAL_PARAM.cell_height) {
+        ui_tr_month_name.style.height = NEATOCAL_PARAM.cell_height;
+      }
+    }
+  }
+
 }
 
 function loadXHR(url, _cb, _errcb) {
@@ -983,6 +1003,10 @@ function neatocal_override_param(param, data) {
     "moon_phase_style",
     "moon_phase_position",
     "moon_phase_display",
+
+    "show_week_numbers",
+
+    "font_family",
 
     "cell_height",
     "highlight_color",
@@ -1501,6 +1525,7 @@ function neatocal_init() {
   let month_format_param = sp.get("month_format");
   let language_param = sp.get("language");
   let show_week_numbers_param = sp.get("show_week_numbers");
+  let font_family_param = sp.get("font_family");
   let ics_param = sp.get("ics");
 
   let weekend_days_param = sp.get("weekend_days");
@@ -1567,6 +1592,7 @@ function neatocal_init() {
     _l = sp.get("layout");
     if      (_l == "default")           { layout = "default"; }
     else if (_l == "aligned-weekdays")  { layout = "aligned-weekdays"; }
+    else if (_l == "compact-calendar")  { layout = "compact-calendar"; }
     else if (_l == "hallon-almanackan") {
       layout = "hallon-almanackan";
       NEATOCAL_PARAM.show_week_numbers = true;
@@ -1727,6 +1753,10 @@ function neatocal_init() {
     NEATOCAL_PARAM.show_week_numbers = (show_week_numbers_param === "true");
   }
 
+  if (font_family_param != null) {
+    NEATOCAL_PARAM.font_family = font_family_param;
+  }
+
   if ((ics_param != null) &&
       (typeof ics_param !== "undefined")) {
     NEATOCAL_PARAM.ics = !(ics_param === "false" || ics_param === "0");
@@ -1802,6 +1832,7 @@ function neatocal_init() {
 }
 
 function neatocal_render() {
+  document.documentElement.style.fontFamily = NEATOCAL_PARAM.font_family;
 
   let cur_start_month = NEATOCAL_PARAM.start_month;
   let month_remain = NEATOCAL_PARAM.n_month;
@@ -1850,7 +1881,13 @@ function neatocal_render() {
   let ui_tbody = document.getElementById("ui_tbody");
   ui_tbody.innerHTML = "";
 
-  if (layout == "aligned-weekdays") {
+  if (layout == "compact-calendar") {
+    document.getElementById("ui_table").style.display = "none";
+    document.getElementById("ui_header").style.display = "none";
+    renderCompactCalendar(NEATOCAL_PARAM, NEATOCAL_PARAM.data || {});
+    return;
+  }
+  else if (layout == "aligned-weekdays") {
     neatocal_aligned_weekdays();
   }
   else if (layout == "hallon-almanackan") {
