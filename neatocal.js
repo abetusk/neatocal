@@ -1592,6 +1592,7 @@ function neatocal_init() {
     _l = sp.get("layout");
     if      (_l == "default")           { layout = "default"; }
     else if (_l == "aligned-weekdays")  { layout = "aligned-weekdays"; }
+    else if (_l == "compact-calendar")  { layout = "compact-calendar"; }
     else if (_l == "hallon-almanackan") {
       layout = "hallon-almanackan";
       NEATOCAL_PARAM.show_week_numbers = true;
@@ -1880,7 +1881,13 @@ function neatocal_render() {
   let ui_tbody = document.getElementById("ui_tbody");
   ui_tbody.innerHTML = "";
 
-  if (layout == "aligned-weekdays") {
+  if (layout == "compact-calendar") {
+    document.getElementById("ui_table").style.display = "none";
+    document.getElementById("ui_header").style.display = "none";
+    renderCompactCalendar(NEATOCAL_PARAM, NEATOCAL_PARAM.data || {});
+    return;
+  }
+  else if (layout == "aligned-weekdays") {
     neatocal_aligned_weekdays();
   }
   else if (layout == "hallon-almanackan") {

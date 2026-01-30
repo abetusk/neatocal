@@ -55,3 +55,5 @@ dkms.conf
 *.swp
 
 .*
+!.github/
+!.gitignore
