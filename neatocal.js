@@ -63,6 +63,13 @@ var NEATOCAL_PARAM = {
   //
   "format": "default",
 
+  // orientation
+  //
+  //   vertical (default) - months as columns, days as rows
+  //   horizontal - months as rows, days as columns
+  //
+  "orientation": "vertical",
+
   // year to start
   //
   //   default this year
@@ -524,10 +531,72 @@ function localized_month(locale, mo_idx) {
   return d.toLocaleDateString(locale, {"month":NEATOCAL_PARAM.month_format});
 }
 
+function neatocal_hallon_populate_cell(cell, cur_year, cur_mo, idx, i_mo, day_parity, orientation) {
+  let nday_in_mo = new Date(cur_year, cur_mo+1, 0).getDate();
+
+  if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
+      (NEATOCAL_PARAM.cell_height != null) &&
+      (NEATOCAL_PARAM.cell_height != "")) {
+    cell.style.height = NEATOCAL_PARAM.cell_height;
+  }
+
+  if (idx < nday_in_mo) {
+    let dt = new Date(cur_year, cur_mo, idx+1);
+    let d = NEATOCAL_PARAM.weekday_code[ dt.getDay() ];
+
+    if (day_parity[i_mo][idx]) {
+      cell.classList.add("weekend");
+    }
+
+    // In vertical mode, border-bottom separates week groups.
+    // In horizontal mode, border-right is handled by CSS, so
+    // we use the same logic but on border-right.
+    if (orientation === "horizontal") {
+      if ((dt.getDay() != 0) || (idx == (nday_in_mo-1))) {
+        cell.style.borderRight = '0';
+      }
+    } else {
+      if ((dt.getDay() != 0) || (idx == (nday_in_mo-1))) {
+        cell.style.borderBottom = '0';
+      }
+    }
+
+    let span_date = H.span((idx+1).toString(), "date");
+    let span_day = H.span(d, "day");
+
+    date_styles(span_date);
+
+    if (NEATOCAL_PARAM.weekend_days.includes(dt.getDay())) {
+      span_date.style.color = "rgb(230,37,7)";
+      span_day.style.color = "rgb(230,37,7)";
+      weekend_styles(span_day);
+      weekend_date_styles(span_date);
+    } else {
+      weekday_styles(span_day);
+    }
+
+    cell.appendChild( span_date );
+    cell.appendChild( span_day );
+
+    if ((dt.getDay() == 1) && NEATOCAL_PARAM.show_week_numbers) {
+      let span_week_no = H.span(getISOWeekNumber(dt), "date");
+      span_week_no.style.float = "right";
+      span_week_no.style.color = "rgb(230,37,7)";
+      week_styles(span_week_no);
+      cell.appendChild(span_week_no);
+    }
+
+    let yyyy_mm_dd = fmt_date(cur_year, cur_mo+1, idx+1);
+    render_cell_data(cell, yyyy_mm_dd);
+    renderMoonPhase(cell, cur_year, cur_mo, idx+1);
+  }
+}
+
 function neatocal_hallon_almanackan() {
   let year      = NEATOCAL_PARAM.year;
   let start_mo  = NEATOCAL_PARAM.start_month;
   let n_mo      = NEATOCAL_PARAM.n_month;
+  let orientation = NEATOCAL_PARAM.orientation || "vertical";
 
   let ui_month_headers = document.getElementById("ui_month_headers");
   ui_month_headers.innerHTML = "";
@@ -538,13 +607,10 @@ function neatocal_hallon_almanackan() {
   }
 
   // Precompute the parity of week the day falls on.
-  // Calendar is month major order, making it more difficult
-  // to calculate the parity of week the day falls in.
   //
   let week_parity = 0;
   let day_parity = {};
   for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
-
     let cur_year = parseInt(year) + Math.floor(i_mo/12);
     let cur_mo = i_mo%12;
     let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
@@ -555,107 +621,97 @@ function neatocal_hallon_almanackan() {
 
     for (let day_idx=0; day_idx < 31; day_idx++) {
       if (day_idx >= nday_in_mo) { break; }
-
       day_parity[i_mo][day_idx] = week_parity;
-
       let dt = new Date(cur_year, cur_mo, day_idx+1);
       if (dt.getDay() == 0) {
         week_parity = 1-week_parity;
       }
-
     }
   }
 
   let grid_body = document.getElementById("ui_grid_body");
-  for (let idx=0; idx<31; idx++) {
 
-    let cur_year = year;
+  if (orientation === "horizontal") {
+    // Horizontal: outer=months (rows), inner=days (columns)
     for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
-
-      cur_year = parseInt(year) + Math.floor(i_mo/12);
-
+      let cur_year = parseInt(year) + Math.floor(i_mo/12);
       let cur_mo = i_mo%12;
 
-      let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
-
-      let cell = H.cell();
-      cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, idx+1);
-
-      if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
-          (NEATOCAL_PARAM.cell_height != null) &&
-          (NEATOCAL_PARAM.cell_height != "")) {
-        cell.style.height = NEATOCAL_PARAM.cell_height;
+      for (let idx=0; idx<31; idx++) {
+        let cell = H.cell();
+        cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, idx+1);
+        neatocal_hallon_populate_cell(cell, cur_year, cur_mo, idx, i_mo, day_parity, orientation);
+        grid_body.appendChild(cell);
       }
-
-      if (idx < nday_in_mo) {
-
-        let dt = new Date(cur_year, cur_mo, idx+1);
-
-        let d = NEATOCAL_PARAM.weekday_code[ dt.getDay() ];
-
-        if (day_parity[i_mo][idx]) {
-          cell.classList.add("weekend");
-        }
-
-        if ((dt.getDay() != 0) ||
-            (idx == (nday_in_mo-1))) {
-          cell.style.borderBottom = '0';
-        }
-
-
-        let span_date = H.span((idx+1).toString(), "date");
-        let span_day = H.span(d, "day");
-
-        // If any param specified stylings apply, apply them.
-        // Date stylings happen before weekend_date so that
-        // the weekend_date, if specified, can override
-        //
-
-        date_styles(span_date);
-
-        //if (dt.getDay() == 0) {
-        if (NEATOCAL_PARAM.weekend_days.includes(dt.getDay())) {
-          span_date.style.color = "rgb(230,37,7)";
-          span_day.style.color = "rgb(230,37,7)";
-          weekend_styles(span_day);
-          weekend_date_styles(span_date);
-        }
-
-        else {
-          weekday_styles(span_day);
-        }
-
-        cell.appendChild( span_date );
-        cell.appendChild( span_day );
-
-        if ((dt.getDay() == 1) && NEATOCAL_PARAM.show_week_numbers) {
-          let span_week_no = H.span(getISOWeekNumber(dt), "date");
-          span_week_no.style.float = "right";
-          span_week_no.style.color = "rgb(230,37,7)";
-          week_styles(span_week_no);
-          cell.appendChild(span_week_no);
-        }
-
-        let yyyy_mm_dd = fmt_date(cur_year, cur_mo+1, idx+1);
-        render_cell_data(cell, yyyy_mm_dd);
-
-        // Add moon phase if enabled
-        //
-        renderMoonPhase(cell, cur_year, cur_mo, idx+1);
-
-      }
-      grid_body.appendChild(cell);
-
     }
+  } else {
+    // Vertical: outer=days (rows), inner=months (columns)
+    for (let idx=0; idx<31; idx++) {
+      for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
+        let cur_year = parseInt(year) + Math.floor(i_mo/12);
+        let cur_mo = i_mo%12;
 
+        let cell = H.cell();
+        cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, idx+1);
+        neatocal_hallon_populate_cell(cell, cur_year, cur_mo, idx, i_mo, day_parity, orientation);
+        grid_body.appendChild(cell);
+      }
+    }
   }
 
+}
+
+function neatocal_default_populate_cell(cell, cur_year, cur_mo, idx) {
+  let nday_in_mo = new Date(cur_year, cur_mo + 1, 0).getDate();
+
+  if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
+      (NEATOCAL_PARAM.cell_height != null) &&
+      (NEATOCAL_PARAM.cell_height != "")) {
+    cell.style.height = NEATOCAL_PARAM.cell_height;
+  }
+
+  if (idx < nday_in_mo) {
+    let dt = new Date(cur_year, cur_mo, idx + 1);
+    let d = NEATOCAL_PARAM.weekday_code[dt.getDay()];
+
+    if (NEATOCAL_PARAM.weekend_days.includes(dt.getDay())) {
+      cell.classList.add("weekend");
+    }
+
+    let span_date = H.span((idx + 1).toString(), "date");
+    let span_day = H.span(d, "day");
+
+    date_styles(span_date);
+
+    if ((dt.getDay() == 0) || (dt.getDay() == 6)) {
+      weekend_styles(span_day);
+      weekend_date_styles(span_date);
+    } else {
+      weekday_styles(span_day);
+    }
+
+    cell.appendChild(span_date);
+    cell.appendChild(span_day);
+
+    if ((dt.getDay() == 1) && NEATOCAL_PARAM.show_week_numbers) {
+      let span_week_no = H.span(getISOWeekNumber(dt), "date");
+      span_week_no.style.float = "right";
+      span_week_no.style.color = "rgb(230,37,7)";
+      week_styles(span_week_no);
+      cell.appendChild(span_week_no);
+    }
+
+    let yyyy_mm_dd = fmt_date(cur_year, cur_mo + 1, idx + 1);
+    render_cell_data(cell, yyyy_mm_dd);
+    renderMoonPhase(cell, cur_year, cur_mo, idx + 1);
+  }
 }
 
 function neatocal_default() {
   let year      = NEATOCAL_PARAM.year;
   let start_mo  = NEATOCAL_PARAM.start_month;
   let n_mo      = NEATOCAL_PARAM.n_month;
+  let orientation = NEATOCAL_PARAM.orientation || "vertical";
 
   let ui_month_headers = document.getElementById("ui_month_headers");
   ui_month_headers.innerHTML = "";
@@ -666,81 +722,33 @@ function neatocal_default() {
   }
 
   let grid_body = document.getElementById("ui_grid_body");
-  for (let idx=0; idx<31; idx++) {
 
-    let cur_year = year;
+  if (orientation === "horizontal") {
+    // Horizontal: outer=months (rows), inner=days (columns)
     for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
-
-      cur_year = parseInt(year) + Math.floor(i_mo/12);
-
+      let cur_year = parseInt(year) + Math.floor(i_mo/12);
       let cur_mo = i_mo%12;
 
-      let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
-
-      let cell = H.cell();
-      cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, idx+1);
-
-      if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
-          (NEATOCAL_PARAM.cell_height != null) &&
-          (NEATOCAL_PARAM.cell_height != "")) {
-        cell.style.height = NEATOCAL_PARAM.cell_height;
+      for (let idx=0; idx<31; idx++) {
+        let cell = H.cell();
+        cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, idx+1);
+        neatocal_default_populate_cell(cell, cur_year, cur_mo, idx);
+        grid_body.appendChild(cell);
       }
-
-      if (idx < nday_in_mo) {
-
-        let dt = new Date(cur_year, cur_mo, idx+1);
-
-        let d = NEATOCAL_PARAM.weekday_code[ dt.getDay() ];
-
-        //if ((dt.getDay() == 0) ||
-        //    (dt.getDay() == 6)) {
-        if (NEATOCAL_PARAM.weekend_days.includes(dt.getDay())) {
-          cell.classList.add("weekend");
-        }
-
-        let span_date = H.span((idx+1).toString(), "date");
-        let span_day = H.span(d, "day");
-
-        // If any param specified stylings apply, apply them.
-        // Date stylings happen before weekend_date so that
-        // the weekend_date, if specified, can override
-        //
-
-        date_styles(span_date);
-
-        if ((dt.getDay() == 0) ||
-            (dt.getDay() == 6)) {
-          weekend_styles(span_day);
-          weekend_date_styles(span_date);
-        }
-
-        else {
-          weekday_styles(span_day);
-        }
-
-        cell.appendChild( span_date );
-        cell.appendChild( span_day );
-
-        if ((dt.getDay() == 1) && NEATOCAL_PARAM.show_week_numbers) {
-          let span_week_no = H.span(getISOWeekNumber(dt), "date");
-          span_week_no.style.float = "right";
-          span_week_no.style.color = "rgb(230,37,7)";
-          week_styles(span_week_no);
-          cell.appendChild(span_week_no);
-        }
-
-        let yyyy_mm_dd = fmt_date(cur_year, cur_mo+1, idx+1);
-        render_cell_data(cell, yyyy_mm_dd);
-
-        // Add moon phase if enabled
-        //
-        renderMoonPhase(cell, cur_year, cur_mo, idx+1);
-
-      }
-      grid_body.appendChild(cell);
-
     }
+  } else {
+    // Vertical: outer=days (rows), inner=months (columns)
+    for (let idx=0; idx<31; idx++) {
+      for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
+        let cur_year = parseInt(year) + Math.floor(i_mo/12);
+        let cur_mo = i_mo%12;
 
+        let cell = H.cell();
+        cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, idx+1);
+        neatocal_default_populate_cell(cell, cur_year, cur_mo, idx);
+        grid_body.appendChild(cell);
+      }
+    }
   }
 
 }
@@ -778,10 +786,61 @@ function getISOWeekNumber(date) {
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
+function neatocal_aligned_populate_cell(cell, cur_year, cur_mo, day_idx) {
+  let nday_in_mo = new Date(cur_year, cur_mo+1, 0).getDate();
+
+  if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
+      (NEATOCAL_PARAM.cell_height != null) &&
+      (NEATOCAL_PARAM.cell_height != "")) {
+    cell.style.height = NEATOCAL_PARAM.cell_height;
+  }
+
+  if ((day_idx >= 0) && (day_idx < nday_in_mo)) {
+    let dt = new Date(cur_year, cur_mo, day_idx+1);
+    let wd_code = NEATOCAL_PARAM.weekday_code[ dt.getDay() ];
+
+    if (NEATOCAL_PARAM.weekend_days.includes(dt.getDay())) {
+      cell.classList.add("weekend");
+    }
+
+    let span_date = H.span((day_idx+1).toString(), "date");
+    let span_day = H.span(wd_code, "day");
+
+    date_styles(span_date);
+
+    if ((dt.getDay() == 0) || (dt.getDay() == 6)) {
+      weekend_styles(span_day);
+      weekend_date_styles(span_date);
+    } else {
+      weekday_styles(span_day);
+    }
+
+    cell.appendChild( span_date );
+    cell.appendChild( span_day );
+
+    if ((dt.getDay() == 1) && NEATOCAL_PARAM.show_week_numbers) {
+      let span_week_no = H.span(getISOWeekNumber(dt), "date");
+      span_week_no.style.float = "right";
+      span_week_no.style.color = "rgb(230,37,7)";
+      week_styles(span_week_no);
+      cell.appendChild(span_week_no);
+    }
+
+    let yyyy_mm_dd = fmt_date(cur_year, cur_mo+1, day_idx+1);
+    render_cell_data(cell, yyyy_mm_dd);
+    renderMoonPhase(cell, cur_year, cur_mo, day_idx+1);
+
+    return true; // cell has content
+  }
+
+  return false; // cell is empty
+}
+
 function neatocal_aligned_weekdays() {
   let year      = parseInt(NEATOCAL_PARAM.year);
   let start_mo  = parseInt(NEATOCAL_PARAM.start_month);
   let n_mo      = parseInt(NEATOCAL_PARAM.n_month);
+  let orientation = NEATOCAL_PARAM.orientation || "vertical";
 
   let ui_month_headers = document.getElementById("ui_month_headers");
   ui_month_headers.innerHTML = "";
@@ -791,12 +850,8 @@ function neatocal_aligned_weekdays() {
     ui_month_headers.appendChild( hdr );
   }
 
-  // start_day, when to start the first day in the month.
-  // day_in_mo_start is the number of days past the start_day
-  //   the month starts, so we know how much to skip over when
-  //   displaying the aligned cells.
+  // Precompute day-of-week offset for each month
   //
-  let max_start = -1;
   let start_day = NEATOCAL_PARAM.start_day;
   let day_in_mo_start = [];
   for (let i=0; i<n_mo; i++) { day_in_mo_start.push(0); }
@@ -805,118 +860,71 @@ function neatocal_aligned_weekdays() {
     let cur_mo = i_mo%12;
     let s = new Date(cur_year, cur_mo, 1).getDay();
     day_in_mo_start[i_mo - start_mo] = s;
-
-    if (day_in_mo_start[i_mo - start_mo] > max_start) {
-      max_start = day_in_mo_start[i_mo - start_mo];
-    }
   }
 
   let grid_body = document.getElementById("ui_grid_body");
-  for (let idx=0; idx<42; idx++) {
 
-    let row_cells = [];
-    let row_has_content = false;
+  if (orientation === "horizontal") {
+    // Horizontal: outer=months (rows), inner=week-slots (columns)
+    // First, determine which columns (0-41) have content in any month
+    let col_has_content = [];
+    for (let idx = 0; idx < 42; idx++) {
+      let has = false;
+      for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
+        let cur_year = parseInt(year) + Math.floor(i_mo/12);
+        let cur_mo = i_mo%12;
+        let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
+        let day_idx = idx - ((day_in_mo_start[i_mo - start_mo] - start_day + 7)%7);
+        if (day_idx >= 0 && day_idx < nday_in_mo) { has = true; break; }
+      }
+      col_has_content.push(has);
+    }
 
-    let cur_year = year;
+    // Count active columns for --n-days
+    let active_cols = 0;
+    for (let idx = 0; idx < 42; idx++) {
+      if (col_has_content[idx]) active_cols++;
+    }
+    grid_body.style.setProperty('--n-days', active_cols);
+
     for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
-
-      cur_year = parseInt(year) + Math.floor(i_mo/12);
-
-      // cur_mo is the month in the current year
-      // nday_in_mo is the number of days in the month under consideration
-      // day_idx is the day of the month this cell would fall in,
-      //  which can be out of bounds (less than 0 or greater than the number of
-      //  days in the month)
-      //
+      let cur_year = parseInt(year) + Math.floor(i_mo/12);
       let cur_mo = i_mo%12;
-      let nday_in_mo = new Date(cur_year,cur_mo+1,0).getDate();
-      let day_idx = idx - ((day_in_mo_start[i_mo - start_mo] - start_day + 7)%7);
 
-      let cell = H.cell();
-      cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, day_idx+1);
+      for (let idx = 0; idx < 42; idx++) {
+        if (!col_has_content[idx]) continue;
 
-      if ((typeof NEATOCAL_PARAM.cell_height !== "undefined") &&
-          (NEATOCAL_PARAM.cell_height != null) &&
-          (NEATOCAL_PARAM.cell_height != "")) {
-        cell.style.height = NEATOCAL_PARAM.cell_height;
-      }
-
-      // if our day falls within bounds, we decorate the cell with the appropriate
-      // values
-      //
-      if ((day_idx >= 0) &&
-          (day_idx < nday_in_mo)) {
-
-        row_has_content = true;
-
-        let dt = new Date(cur_year, cur_mo, day_idx+1);
-
-        let wd_code = NEATOCAL_PARAM.weekday_code[ dt.getDay() ];
-
-        // If it's a weekend (Su,Sa), add the 'weekend' class to allow for highlighting
-        //
-        //if ((dt.getDay() == 0) ||
-        //    (dt.getDay() == 6)) {
-        if (NEATOCAL_PARAM.weekend_days.includes(dt.getDay())) {
-          cell.classList.add("weekend");
-        }
-
-
-        // date - day in month
-        // day  - name of weekday (e.g. Su,M,T,W,R,F,Sa)
-        //
-        let span_date = H.span((day_idx+1).toString(), "date");
-        let span_day = H.span(wd_code, "day");
-
-        // If any param specified stylings apply, apply them.
-        // Date stylings happen before weekend_date so that
-        // the weekend_date, if specified, can override
-        //
-
-        date_styles(span_date);
-
-        if ((dt.getDay() == 0) ||
-            (dt.getDay() == 6)) {
-          weekend_styles(span_day);
-          weekend_date_styles(span_date);
-        }
-
-        else {
-          weekday_styles(span_day);
-        }
-
-        cell.appendChild( span_date );
-        cell.appendChild( span_day );
-
-        if ((dt.getDay() == 1) && NEATOCAL_PARAM.show_week_numbers) {
-          let span_week_no = H.span(getISOWeekNumber(dt), "date");
-          span_week_no.style.float = "right";
-          span_week_no.style.color = "rgb(230,37,7)";
-          week_styles(span_week_no);
-          cell.appendChild(span_week_no);
-        }
-
-        let yyyy_mm_dd = fmt_date(cur_year, cur_mo+1, day_idx+1);
-        render_cell_data(cell, yyyy_mm_dd);
-
-        // Add moon phase if enabled
-        //
-        renderMoonPhase(cell, cur_year, cur_mo, day_idx+1);
-
-      }
-      row_cells.push(cell);
-
-    }
-
-    // Only emit rows that have at least one populated cell
-    // (prevents empty trailing rows from taking up grid space)
-    //
-    if (row_has_content) {
-      for (let c = 0; c < row_cells.length; c++) {
-        grid_body.appendChild(row_cells[c]);
+        let day_idx = idx - ((day_in_mo_start[i_mo - start_mo] - start_day + 7)%7);
+        let cell = H.cell();
+        cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, day_idx+1);
+        neatocal_aligned_populate_cell(cell, cur_year, cur_mo, day_idx);
+        grid_body.appendChild(cell);
       }
     }
+  } else {
+    // Vertical: outer=week-slots (rows), inner=months (columns)
+    for (let idx=0; idx<42; idx++) {
+      let row_cells = [];
+      let row_has_content = false;
 
+      for (let i_mo = start_mo; i_mo < (start_mo+n_mo); i_mo++) {
+        let cur_year = parseInt(year) + Math.floor(i_mo/12);
+        let cur_mo = i_mo%12;
+        let day_idx = idx - ((day_in_mo_start[i_mo - start_mo] - start_day + 7)%7);
+
+        let cell = H.cell();
+        cell.id = "ui_" + fmt_date(cur_year, cur_mo+1, day_idx+1);
+        let has_content = neatocal_aligned_populate_cell(cell, cur_year, cur_mo, day_idx);
+        if (has_content) row_has_content = true;
+        row_cells.push(cell);
+      }
+
+      if (row_has_content) {
+        for (let c = 0; c < row_cells.length; c++) {
+          grid_body.appendChild(row_cells[c]);
+        }
+      }
+    }
   }
 
 }
@@ -928,12 +936,13 @@ function neatocal_post_process() {
     x[i].style.background = highlight_color;
   }
 
-  // Highlight today's date
-  if (NEATOCAL_PARAM.today_highlight_color) {
-    let today = new Date();
-    let today_str = fmt_date(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    let today_ele = document.getElementById("ui_" + today_str);
-    if (today_ele) {
+  // Mark and highlight today's date
+  let today = new Date();
+  let today_str = fmt_date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  let today_ele = document.getElementById("ui_" + today_str);
+  if (today_ele) {
+    today_ele.classList.add("today");
+    if (NEATOCAL_PARAM.today_highlight_color) {
       today_ele.style.background = NEATOCAL_PARAM.today_highlight_color;
     }
   }
@@ -989,6 +998,7 @@ function neatocal_override_param(param, data) {
 
     "year",
     "layout",
+    "orientation",
 
     "start_day",
     "start_month",
@@ -1517,6 +1527,7 @@ function neatocal_init() {
   let help_param = sp.get("help");
   let year_param = sp.get("year");
   let layout_param = sp.get("layout");
+  let orientation_param = sp.get("orientation");
   let start_month_param = sp.get("start_month");
   let n_month_param = sp.get("n_month");
   let start_day_param = sp.get("start_day");
@@ -1603,6 +1614,15 @@ function neatocal_init() {
     }
   }
   NEATOCAL_PARAM.layout = layout;
+
+  //---
+
+  if ((orientation_param != null) &&
+      (typeof orientation_param !== "undefined")) {
+    if (orientation_param === "horizontal" || orientation_param === "vertical") {
+      NEATOCAL_PARAM.orientation = orientation_param;
+    }
+  }
 
   //---
 
@@ -1884,10 +1904,27 @@ function neatocal_render() {
 
   //---
   let n_mo = NEATOCAL_PARAM.n_month;
+  let orientation = NEATOCAL_PARAM.orientation || "vertical";
+  let is_horizontal = (orientation === "horizontal");
+
+  let grid_el = document.getElementById("ui_grid");
+  let headers_el = document.getElementById("ui_month_headers");
   let ui_grid_body = document.getElementById("ui_grid_body");
   ui_grid_body.innerHTML = "";
+
+  grid_el.classList.toggle("horizontal", is_horizontal);
+  headers_el.classList.toggle("horizontal", is_horizontal);
+  ui_grid_body.classList.toggle("horizontal", is_horizontal);
+
   ui_grid_body.style.setProperty('--n-months', n_mo);
-  document.getElementById("ui_month_headers").style.setProperty('--n-months', n_mo);
+  headers_el.style.setProperty('--n-months', n_mo);
+
+  if (is_horizontal) {
+    let n_days = (layout === "aligned-weekdays") ? 42 : 31;
+    ui_grid_body.style.setProperty('--n-days', n_days);
+  } else {
+    ui_grid_body.style.removeProperty('--n-days');
+  }
 
   if (layout == "aligned-weekdays") {
     neatocal_aligned_weekdays();
@@ -1911,6 +1948,7 @@ var SETTINGS_DEFAULTS = {
   "start_month": 0,
   "n_month": 12,
   "layout": "default",
+  "orientation": "vertical",
   "start_day": 1,
   "language": "",
   "font_family": "",
@@ -1938,6 +1976,8 @@ var SETTINGS_CONFIG = [
     options: [
       {v:"default",t:"Default"},{v:"aligned-weekdays",t:"Aligned Weekdays"},{v:"hallon-almanackan",t:"Hallon Almanackan"}
     ]},
+  { key: "orientation", type: "pill", label: "Orientation", group: "Calendar",
+    options: [{v:"vertical",t:"Vertical"},{v:"horizontal",t:"Horizontal"}] },
   { key: "start_day", type: "select", label: "Start Day", group: "Calendar",
     options: [
       {v:0,t:"Sunday"},{v:1,t:"Monday"},{v:2,t:"Tuesday"},{v:3,t:"Wednesday"},
@@ -2160,6 +2200,31 @@ function neatocal_setup_settings() {
         settings_apply(cfg.key, input.checked);
       });
       row.appendChild(input);
+
+    } else if (cfg.type === "pill") {
+      let group = document.createElement("div");
+      group.classList.add("settings-pill-group");
+      group.id = "settings_input_" + cfg.key;
+      for (let o = 0; o < cfg.options.length; o++) {
+        let btn = document.createElement("button");
+        btn.type = "button";
+        btn.classList.add("settings-pill");
+        btn.textContent = cfg.options[o].t;
+        btn.dataset.value = cfg.options[o].v;
+        if (String(NEATOCAL_PARAM[cfg.key]) === String(cfg.options[o].v)) {
+          btn.classList.add("active");
+        }
+        btn.addEventListener("click", function() {
+          let siblings = group.querySelectorAll(".settings-pill");
+          for (let s = 0; s < siblings.length; s++) {
+            siblings[s].classList.remove("active");
+          }
+          btn.classList.add("active");
+          settings_apply(cfg.key, btn.dataset.value);
+        });
+        group.appendChild(btn);
+      }
+      row.appendChild(group);
 
     } else if (cfg.type === "select") {
       let sel = document.createElement("select");

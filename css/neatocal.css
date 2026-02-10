@@ -40,28 +40,50 @@ SOFTWARE.
   .settings-fab {
     display: none;
   }
-  .settings-panel {
+  .settings-panel,
+  .settings-panel.open {
     display: none;
+  }
+  .today {
+    background: none !important;
   }
 }
 
+:root {
+  --text: #333;
+  --text-subtle: #999;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
-  font-family: "Oswald";
+  font-family:
+    monaco,
+    Consolas,
+    Lucida Console,
+    monospace;
 }
 
 html,
 body {
   height: 100%;
   margin: 0;
-  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
 }
 
 #ui_header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2em;
-  padding: 0 1em 0.4em;
   flex: 0 0 auto;
 }
 
@@ -71,7 +93,7 @@ body {
 
 .cal-grid {
   width: 100%;
-  height: calc(100% - 4em);
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -79,14 +101,14 @@ body {
 .cal-month-headers {
   display: grid;
   grid-template-columns: repeat(var(--n-months, 12), 1fr);
-  column-gap: 0.5em;
-  padding: 0 0.25em;
+  column-gap: 0.25rem;
+  padding: 0 0.25rem;
 }
 
 .cal-header {
   font-weight: normal;
   text-transform: uppercase;
-  border-bottom: 1px solid #888;
+  border-bottom: 1px solid #eee;
   font-size: 1.1vmin;
   padding: 0;
   color: #000;
@@ -95,40 +117,48 @@ body {
 .cal-grid-body {
   display: grid;
   grid-template-columns: repeat(var(--n-months, 12), 1fr);
-  column-gap: 0.5em;
-  padding: 0 0.25em;
+  padding: 0.25rem;
   flex: 1;
   grid-auto-rows: 1fr;
 }
 
 .cal-cell {
+  display: flex;
+  gap: 0.25rem;
   font-weight: 300;
   text-transform: uppercase;
-  border-bottom: 1px solid #888;
+  outline: 1px solid #eee;
   padding: 0.3vmin 0.3vmin;
   font-size: 0.9vmin;
-  color: #000;
+  color: var(--text);
+  background: #fff;
 }
 
 .cal-cell:empty {
   border: 0;
+  background: none;
+  outline: none;
+}
+
+.date,
+.day {
+  display: inline-block;
+  text-align: center;
+  width: 1em;
+  mix-blend-mode: multiply;
 }
 
 .date {
-  display: inline-block;
   width: 1.1em;
 }
 
 .day {
   display: inline-block;
-  text-align: center;
-  width: 1em;
-  color: #888;
+  color: var(--text-subtle);
 }
 
 .weekend {
-  /* background: #d8d8d8; */
-  background: #eee;
+  background: #f7f7f7;
   font-weight: 400;
 }
 
@@ -329,26 +359,67 @@ p {
   cursor: pointer;
 }
 
+/* Horizontal orientation */
+.cal-grid.horizontal {
+  flex-direction: row;
+}
+
+.cal-month-headers.horizontal {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(var(--n-months, 12), 1fr);
+  padding: 0.25em 0;
+}
+
+.cal-month-headers.horizontal .cal-header {
+  display: flex;
+  align-items: center;
+  padding: 0 0.3vmin;
+}
+
+.cal-grid-body.horizontal {
+  grid-template-columns: repeat(var(--n-days, 31), 1fr);
+  grid-template-rows: repeat(var(--n-months, 12), 1fr);
+  grid-auto-flow: row;
+}
+
+.cal-grid-body.horizontal .cal-cell {
+  font-size: 0.9vmin;
+}
+
+.cal-grid-body.horizontal .cal-cell:empty {
+  border-right: 0;
+}
+
 /* Settings FAB */
 .settings-fab {
   position: fixed;
+  display: grid;
+  place-content: center;
   bottom: 1rem;
   right: 1rem;
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
   border: none;
-  background: #333;
-  color: #fff;
+  background: transparent;
+  /*color: #fff;*/
   font-size: 32px;
   cursor: pointer;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);*/
   transition: background 0.15s;
-}
 
-.settings-fab:hover {
-  background: #555;
+  .gear-icon {
+    fill: #aaa;
+  }
+
+  &:hover {
+    background: #ddd;
+
+    .gear-icon {
+      fill: #111;
+    }
+  }
 }
 
 /* Settings Panel */
@@ -394,13 +465,13 @@ p {
   border: none;
   font-size: 32px;
   cursor: pointer;
-  color: #666;
+  color: #aaa;
   padding: 0 0.2em;
   line-height: 1;
 }
 
 .settings-close:hover {
-  color: #000;
+  color: #111;
 }
 
 .settings-panel-body {
@@ -482,6 +553,41 @@ input[type="checkbox"].settings-input {
   width: auto;
   cursor: pointer;
   accent-color: #333;
+}
+
+.settings-pill-group {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.settings-pill {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 300;
+  padding: 0.3em 0.6em;
+  border: none;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition:
+    background 0.1s,
+    color 0.1s;
+}
+
+.settings-pill + .settings-pill {
+  border-left: 1px solid #ccc;
+}
+
+.settings-pill.active {
+  background: #333;
+  color: #fff;
+  font-weight: 400;
+}
+
+.settings-pill:hover:not(.active) {
+  background: #eee;
 }
 
 .settings-checkboxes {
