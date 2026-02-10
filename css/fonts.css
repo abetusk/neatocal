@@ -1,0 +1,29 @@
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(TK3_WkUHHAIjg75cFRf3bXL8LICs169vgUE.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(TK3_WkUHHAIjg75cFRf3bXL8LICs1_FvgUE.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Fira Code";
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  src: url(FiraCode-VariableFont_wght.ttf) format("truetype");
+}
+/*SourceCodePro-VariableFont_wght.ttf*/
+@font-face {
+  font-family: "Source Code Pro", monospace;
+  font-optical-sizing: auto;
+  font-weight: 200 900;
+  font-style: normal;
+  src: url(SourceCodePro-VariableFont_wght.ttf) format("truetype");
+}

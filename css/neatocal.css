@@ -61,17 +61,20 @@ SOFTWARE.
 }
 
 html {
-  font-family:
-    monaco,
-    Consolas,
-    Lucida Console,
-    monospace;
+  font-size: 16px;
 }
 
 html,
 body {
   height: 100%;
   margin: 0;
+  font-family:
+    "Source Code Pro",
+    monaco,
+    Consolas,
+    Lucida Console,
+    monospace;
+  font-weight: 400;
 }
 
 body {
@@ -106,7 +109,7 @@ body {
 }
 
 .cal-header {
-  font-weight: normal;
+  font-weight: 600;
   text-transform: uppercase;
   border-bottom: 1px solid #eee;
   font-size: 1.1vmin;
@@ -124,14 +127,20 @@ body {
 
 .cal-cell {
   display: flex;
-  gap: 0.25rem;
-  font-weight: 300;
+  flex-wrap: wrap;
+  gap: 0.125rem 0.25rem;
+  align-content: flex-start;
+  justify-items: baseline;
   text-transform: uppercase;
   outline: 1px solid #eee;
   padding: 0.3vmin 0.3vmin;
   font-size: 0.9vmin;
   color: var(--text);
   background: #fff;
+
+  & > * {
+    height: fit-content;
+  }
 }
 
 .cal-cell:empty {
@@ -159,7 +168,6 @@ body {
 
 .weekend {
   background: #f7f7f7;
-  font-weight: 400;
 }
 
 p {
@@ -173,7 +181,6 @@ p {
 }
 
 #ui_info {
-  font-family: "Inter", sans-serif;
   position: absolute;
   top: 0;
   left: 0;
@@ -196,17 +203,18 @@ p {
 
 /* Moon phase styles */
 .moon-container {
-  display: block;
+  display: flex;
+  width: 100%;
   text-align: center;
-  margin-top: 0.2em;
+  /*margin-top: 0.2em;*/
 }
 
 .moon-inline {
-  margin-left: 0.2em;
+  /*margin-left: 0.2em;*/
 }
 
 .moon-symbol {
-  font-size: 1.1em;
+  font-size: 0.9em;
 }
 
 .moon-name {
@@ -390,6 +398,10 @@ p {
   border-right: 0;
 }
 
+.today {
+  background: #d3c7ff;
+}
+
 /* Settings FAB */
 .settings-fab {
   position: fixed;
@@ -402,19 +414,36 @@ p {
   border-radius: 50%;
   border: none;
   background: transparent;
-  /*color: #fff;*/
   font-size: 32px;
   cursor: pointer;
   z-index: 100;
-  /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);*/
-  transition: background 0.15s;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    opacity: 0;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    transition: 0.15s ease all;
+  }
 
   .gear-icon {
     fill: #aaa;
+    transition: 0.15s ease all;
   }
 
   &:hover {
-    background: #ddd;
+    /*background: #ddd;*/
+
+    &::after {
+      width: 100%;
+      opacity: 1;
+    }
 
     .gear-icon {
       fill: #111;
@@ -427,17 +456,17 @@ p {
   position: fixed;
   top: 0;
   right: 0;
-  width: 280px;
+  width: 320px;
   height: 100%;
   background: #fafafa;
   border-left: 1px solid #ccc;
   z-index: 101;
   transform: translateX(100%);
   transition: transform 0.2s ease;
-  display: flex;
-  flex-direction: column-reverse;
-  font-family: "Oswald", sans-serif;
-  font-size: 13px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  /*font-size: 13px;*/
 }
 
 .settings-panel.open {
@@ -445,17 +474,20 @@ p {
 }
 
 .settings-panel-header {
+  grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: fit-content;
   padding: 1.5rem 1.5rem;
   border-top: 1px solid #ddd;
-  flex-shrink: 0;
+  order: 2;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .settings-panel-title {
-  font-size: 15px;
-  font-weight: 400;
+  font-size: 20px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -475,12 +507,17 @@ p {
 }
 
 .settings-panel-body {
-  flex: 1;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
   overflow-y: auto;
   padding: 0.5em 1em 2em;
 }
 
 .settings-section {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
   margin-top: 1rem;
 }
 
@@ -490,7 +527,7 @@ p {
 
 .settings-section-title {
   font-size: 11px;
-  font-weight: 400;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #999;
@@ -498,20 +535,20 @@ p {
 }
 
 .settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
   padding: 0.4em 0;
   gap: 0.5em;
 }
 
-.settings-row.hidden {
+.settings-row.hidden,
+.settings-section.hidden {
   display: none;
 }
 
 .settings-label {
   font-size: 13px;
-  font-weight: 300;
   color: #333;
   white-space: nowrap;
 }
@@ -519,23 +556,18 @@ p {
 .settings-input {
   font-family: inherit;
   font-size: 12px;
-  font-weight: 300;
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 0.3em 0.4em;
   background: #fff;
   color: #333;
-  width: 110px;
+  width: fit-content;
   box-sizing: border-box;
 }
 
 .settings-input:focus {
   outline: none;
   border-color: #888;
-}
-
-select.settings-input {
-  width: 120px;
 }
 
 input[type="number"].settings-input {
@@ -549,10 +581,46 @@ input[type="color"].settings-input {
   cursor: pointer;
 }
 
-input[type="checkbox"].settings-input {
-  width: auto;
+.settings-toggle {
+  position: relative;
+  display: inline-block;
   cursor: pointer;
-  accent-color: #333;
+}
+
+.settings-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-toggle-track {
+  display: block;
+  width: 32px;
+  height: 18px;
+  background: #ccc;
+  border-radius: 9px;
+  transition: background 0.15s;
+}
+
+.settings-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.15s;
+}
+
+.settings-toggle input:checked + .settings-toggle-track {
+  background: #333;
+}
+
+.settings-toggle input:checked + .settings-toggle-track::after {
+  transform: translateX(14px);
 }
 
 .settings-pill-group {
@@ -560,12 +628,12 @@ input[type="checkbox"].settings-input {
   border: 1px solid #ccc;
   border-radius: 4px;
   overflow: hidden;
+  width: fit-content;
 }
 
 .settings-pill {
   font-family: inherit;
   font-size: 12px;
-  font-weight: 300;
   padding: 0.3em 0.6em;
   border: none;
   background: #fff;
@@ -592,16 +660,16 @@ input[type="checkbox"].settings-input {
 
 .settings-checkboxes {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.3em 0.6em;
+  flex-direction: column;
+  gap: 0.6em;
+  width: fit-content;
 }
 
 .settings-checkbox-label {
   font-size: 12px;
-  font-weight: 300;
   color: #333;
   display: flex;
-  align-items: center;
+  align-items: start;
   gap: 0.2em;
   cursor: pointer;
 }

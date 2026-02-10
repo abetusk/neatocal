@@ -1610,7 +1610,6 @@ function neatocal_init() {
     else if (_l == "hallon-almanackan") {
       layout = "hallon-almanackan";
       NEATOCAL_PARAM.show_week_numbers = true;
-      NEATOCAL_PARAM.weekend_days = [0];
     }
   }
   NEATOCAL_PARAM.layout = layout;
@@ -2069,16 +2068,40 @@ function settings_sync_url() {
 }
 
 function settings_update_visibility() {
+  // Track which groups have at least one visible row
+  let group_visible = {};
+
   for (let i = 0; i < SETTINGS_CONFIG.length; i++) {
     let cfg = SETTINGS_CONFIG[i];
-    if (!cfg.showWhen) continue;
     let row = document.getElementById("settings_row_" + cfg.key);
     if (!row) continue;
-    let cond_val = NEATOCAL_PARAM[cfg.showWhen.key];
-    if (cond_val === cfg.showWhen.value) {
-      row.classList.remove("hidden");
+
+    let visible = true;
+    if (cfg.showWhen) {
+      let cond_val = NEATOCAL_PARAM[cfg.showWhen.key];
+      visible = (cond_val === cfg.showWhen.value);
+      if (visible) {
+        row.classList.remove("hidden");
+      } else {
+        row.classList.add("hidden");
+      }
+    }
+
+    if (visible) {
+      group_visible[cfg.group] = true;
+    } else if (!(cfg.group in group_visible)) {
+      group_visible[cfg.group] = false;
+    }
+  }
+
+  // Hide section headers when all their rows are hidden
+  for (let group in group_visible) {
+    let sec = document.getElementById("settings_section_" + group.replace(/\s+/g, "_"));
+    if (!sec) continue;
+    if (group_visible[group]) {
+      sec.classList.remove("hidden");
     } else {
-      row.classList.add("hidden");
+      sec.classList.add("hidden");
     }
   }
 }
@@ -2101,20 +2124,11 @@ function settings_apply(key, value) {
     }
   }
 
-  // Special: hallon-almanackan forces some settings
+  // Special: hallon-almanackan enables week numbers by default
   if (key === "layout" && value === "hallon-almanackan") {
     NEATOCAL_PARAM.show_week_numbers = true;
-    NEATOCAL_PARAM.weekend_days = [0];
     let wn_input = document.getElementById("settings_input_show_week_numbers");
     if (wn_input) wn_input.checked = true;
-    // Update weekend_days checkboxes
-    let wd_container = document.getElementById("settings_wd_container");
-    if (wd_container) {
-      let cbs = wd_container.querySelectorAll('input[type="checkbox"]');
-      for (let j = 0; j < cbs.length; j++) {
-        cbs[j].checked = (parseInt(cbs[j].value) === 0);
-      }
-    }
   }
 
   settings_update_visibility();
@@ -2146,6 +2160,7 @@ function neatocal_setup_settings() {
       current_group = cfg.group;
       let sec = document.createElement("div");
       sec.classList.add("settings-section");
+      sec.id = "settings_section_" + current_group.replace(/\s+/g, "_");
       let title = document.createElement("div");
       title.classList.add("settings-section-title");
       title.textContent = current_group;
@@ -2172,6 +2187,8 @@ function neatocal_setup_settings() {
       for (let d = 0; d < 7; d++) {
         let lbl = document.createElement("label");
         lbl.classList.add("settings-checkbox-label");
+        let toggle = document.createElement("label");
+        toggle.classList.add("settings-toggle");
         let cb = document.createElement("input");
         cb.type = "checkbox";
         cb.value = d;
@@ -2184,22 +2201,31 @@ function neatocal_setup_settings() {
           }
           settings_apply("weekend_days", days);
         });
-        lbl.appendChild(cb);
+        let track = document.createElement("span");
+        track.classList.add("settings-toggle-track");
+        toggle.appendChild(cb);
+        toggle.appendChild(track);
+        lbl.appendChild(toggle);
         lbl.appendChild(document.createTextNode(day_names[d]));
         container.appendChild(lbl);
       }
       row.appendChild(container);
 
     } else if (cfg.type === "checkbox") {
+      let toggle = document.createElement("label");
+      toggle.classList.add("settings-toggle");
       let input = document.createElement("input");
       input.type = "checkbox";
       input.id = "settings_input_" + cfg.key;
-      input.classList.add("settings-input");
       input.checked = !!NEATOCAL_PARAM[cfg.key];
       input.addEventListener("change", function() {
         settings_apply(cfg.key, input.checked);
       });
-      row.appendChild(input);
+      let track = document.createElement("span");
+      track.classList.add("settings-toggle-track");
+      toggle.appendChild(input);
+      toggle.appendChild(track);
+      row.appendChild(toggle);
 
     } else if (cfg.type === "pill") {
       let group = document.createElement("div");
@@ -2296,4 +2322,7 @@ function neatocal_setup_settings() {
 
     body.appendChild(row);
   }
+
+  // Set initial visibility for section headers
+  settings_update_visibility();
 }
