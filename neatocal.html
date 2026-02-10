@@ -95,34 +95,41 @@ SOFTWARE.
   </div>
 
 
-  <table id='ui_table'>
-    <thead id='ui_thead'>
-      <tr id='ui_tr_month_name'>
-        <th>Jan</th>
-        <th>Feb</th>
-        <th>Mar</th>
-        <th>Apr</th>
-        <th>May</th>
-        <th>Jun</th>
-        <th>Jul</th>
-        <th>Aug</th>
-        <th>Sep</th>
-        <th>Oct</th>
-        <th>Nov</th>
-        <th>Dec</th>
-      </tr>
-    </thead>
-
-    <tbody id='ui_tbody'>
-    </tbody>
-
-  </table>
+  <div id='ui_grid' class='cal-grid'>
+    <div id='ui_month_headers' class='cal-month-headers'>
+      <div class='cal-header'>Jan</div>
+      <div class='cal-header'>Feb</div>
+      <div class='cal-header'>Mar</div>
+      <div class='cal-header'>Apr</div>
+      <div class='cal-header'>May</div>
+      <div class='cal-header'>Jun</div>
+      <div class='cal-header'>Jul</div>
+      <div class='cal-header'>Aug</div>
+      <div class='cal-header'>Sep</div>
+      <div class='cal-header'>Oct</div>
+      <div class='cal-header'>Nov</div>
+      <div class='cal-header'>Dec</div>
+    </div>
+    <div id='ui_grid_body' class='cal-grid-body'>
+    </div>
+  </div>
 
   <div id="ics_drop_overlay" class="ics-drop-overlay">
     <div class="ics-drop-box">
       <div class="ics-drop-title">Drop .ics files to import</div>
       <div class="ics-drop-subtitle">Click to choose files</div>
       <input id="ics_file_input" type="file" accept=".ics,text/calendar" multiple>
+    </div>
+  </div>
+
+  <button id="settings_fab" class="settings-fab" aria-label="Settings">&#9881;</button>
+
+  <div id="settings_panel" class="settings-panel">
+    <div class="settings-panel-header">
+      <span class="settings-panel-title">Settings</span>
+      <button id="settings_close" class="settings-close" aria-label="Close">&times;</button>
+    </div>
+    <div id="settings_panel_body" class="settings-panel-body">
     </div>
   </div>
 

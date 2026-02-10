@@ -37,13 +37,20 @@ SOFTWARE.
   .ics-legend {
     display: none;
   }
+  .settings-fab {
+    display: none;
+  }
+  .settings-panel {
+    display: none;
+  }
 }
 
 html {
-  font-family: 'Oswald';
+  font-family: "Oswald";
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -62,30 +69,48 @@ html, body {
   width: 100%;
 }
 
-table {
+.cal-grid {
   width: 100%;
   height: calc(100% - 4em);
-  border-collapse: separate;
-  border-spacing: .5em 0;
+  display: flex;
+  flex-direction: column;
 }
 
-td, th {
+.cal-month-headers {
+  display: grid;
+  grid-template-columns: repeat(var(--n-months, 12), 1fr);
+  column-gap: 0.5em;
+  padding: 0 0.25em;
+}
+
+.cal-header {
   font-weight: normal;
   text-transform: uppercase;
   border-bottom: 1px solid #888;
-  padding: .3vmin .3vmin;
-  font-size: .9vmin;
-  font-weight: 300;
+  font-size: 1.1vmin;
+  padding: 0;
   color: #000;
 }
 
-th {
-  font-size: 1.1vmin;
-  /* font-size: var(--month-font-size); */
-  padding: 0;
+.cal-grid-body {
+  display: grid;
+  grid-template-columns: repeat(var(--n-months, 12), 1fr);
+  column-gap: 0.5em;
+  padding: 0 0.25em;
+  flex: 1;
+  grid-auto-rows: 1fr;
 }
 
-td:empty {
+.cal-cell {
+  font-weight: 300;
+  text-transform: uppercase;
+  border-bottom: 1px solid #888;
+  padding: 0.3vmin 0.3vmin;
+  font-size: 0.9vmin;
+  color: #000;
+}
+
+.cal-cell:empty {
   border: 0;
 }
 
@@ -108,7 +133,7 @@ td:empty {
 }
 
 p {
-  margin: 0 0 .5em 0;
+  margin: 0 0 0.5em 0;
   text-align: center;
 }
 
@@ -118,7 +143,7 @@ p {
 }
 
 #ui_info {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   position: absolute;
   top: 0;
   left: 0;
@@ -126,9 +151,9 @@ p {
   width: calc(100% - 6em);
   background: #333;
   color: #eee;
-  padding: 1em 1em .5em 1em;
+  padding: 1em 1em 0.5em 1em;
   font-size: 2vmax;
-  border-radius: .2em;
+  border-radius: 0.2em;
 }
 #ui_info p {
   text-align: left;
@@ -174,7 +199,7 @@ p {
 }
 
 .event {
-  font-size: .7vmin;
+  font-size: 0.7vmin;
   line-height: 1.2;
   margin-top: 0.2em;
   padding: 0.05em 0.3em;
@@ -301,5 +326,176 @@ p {
   width: 1em;
   height: 1em;
   border-radius: 0.2em;
+  cursor: pointer;
+}
+
+/* Settings FAB */
+.settings-fab {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  background: #333;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: background 0.15s;
+}
+
+.settings-fab:hover {
+  background: #555;
+}
+
+/* Settings Panel */
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100%;
+  background: #fafafa;
+  border-left: 1px solid #ccc;
+  z-index: 101;
+  transform: translateX(100%);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column-reverse;
+  font-family: "Oswald", sans-serif;
+  font-size: 13px;
+}
+
+.settings-panel.open {
+  transform: translateX(0);
+}
+
+.settings-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem;
+  border-top: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.settings-panel-title {
+  font-size: 15px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #666;
+  padding: 0 0.2em;
+  line-height: 1;
+}
+
+.settings-close:hover {
+  color: #000;
+}
+
+.settings-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5em 1em 2em;
+}
+
+.settings-section {
+  margin-top: 1rem;
+}
+
+.settings-section:first-child {
+  margin-top: 1rem;
+}
+
+.settings-section-title {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #999;
+  margin-bottom: 0.5em;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4em 0;
+  gap: 0.5em;
+}
+
+.settings-row.hidden {
+  display: none;
+}
+
+.settings-label {
+  font-size: 13px;
+  font-weight: 300;
+  color: #333;
+  white-space: nowrap;
+}
+
+.settings-input {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 300;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 0.3em 0.4em;
+  background: #fff;
+  color: #333;
+  width: 110px;
+  box-sizing: border-box;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+select.settings-input {
+  width: 120px;
+}
+
+input[type="number"].settings-input {
+  width: 80px;
+}
+
+input[type="color"].settings-input {
+  width: 40px;
+  height: 26px;
+  padding: 1px 2px;
+  cursor: pointer;
+}
+
+input[type="checkbox"].settings-input {
+  width: auto;
+  cursor: pointer;
+  accent-color: #333;
+}
+
+.settings-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em 0.6em;
+}
+
+.settings-checkbox-label {
+  font-size: 12px;
+  font-weight: 300;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
   cursor: pointer;
 }
